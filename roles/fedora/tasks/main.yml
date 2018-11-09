@@ -1,0 +1,37 @@
+- name: Setup Chromium for RH SSO
+  copy:
+    src: redhat-corp.json
+    dest: /etc/chromium/policies/required/
+
+- name: Configure dnsmasq for libvirt/aws
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/NetworkManager/dnsmasq.d/{{ item }}"
+  with_items:
+    - libvirt_dnsmasq.conf
+    - aws_dnsmasq.conf
+
+- name: Configure CUPS for BOS/RDU/ORD
+  lineinfile:
+    path: /etc/cups/cups-browsed.conf
+    state: present
+    line: "{{ item }}"
+  notify:
+    - restart cups
+  with_items:
+    - BrowsePoll cups.bos.redhat.com
+    - BrowsePoll cups.ord.redhat.com
+    - BrowsePoll cups.rdu.redhat.com
+
+- name: Install RPMs for RH VPN
+  dnf:
+    name:
+      - http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-cert-install-0.1-9.el7.csb.noarch.rpm
+      - http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-NetworkManager-openvpn-profiles-0.1-30.el7.csb.noarch.rpm
+      - http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm
+    state: present
+
+- name: Install additional packages
+  dnf:
+    name: "{{ fedora_pkgs }}"
+    state: present

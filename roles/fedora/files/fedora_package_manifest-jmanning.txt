@@ -1,0 +1,69 @@
+# Master package list for a fully functional Fedora workstation / XFCE spin
+
+# Productivity / Communication
+krb5-workstation
+chromium
+evolution
+hexchat
+gimp
+inkscape
+asciidoctor # pulls in ruby if not installed
+$HOME/Downloads/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm # required for RH VPN
+$HOME/Downloads/redhat-internal-cert-install-0.1-7.el7.csb.noarch.rpm # required for RH VPN
+#$HOME/Downloads/bluejeans-1.31.20.x86_64.rpm # chrome/chromium-based blujeans seems to work better
+#libreoffice #avoided due to bloat
+
+# Tools missing from Fedora Workstation / XFCE spin
+vim
+guake
+gvfs-mtp
+rpmconf
+patch
+git
+ansible
+
+# Containerization
+docker
+#apb #must enable the following COPR repo: @ansible-service-broker/ansible-service-broker-latest
+
+# Virtualization
+qemu-kvm libvirt virt-install bridge-utils
+virt-manager
+libguestfs-tools
+libguestfs-bash-completion
+libguestfs
+
+# Programming Languages
+golang
+dep
+python3
+ruby
+
+# AWS SDK and CLI
+awscli
+python2-boto3
+python2-boto
+python3-boto
+
+# Multimedia
+mpg123
+#freshplayerplugin #enables flash in chromium
+#icedtea-web pangox-compat.i686 libXmu.i686 mesa-libEGL.i686 gtk2.i686 libpng.i686 alsa-lib.i686 libXtst.i686 libart_lgpl.i686 #required for old cisco webex screenshare
+
+# Backgrounds / Artwork
+fedora-workstation-backgrounds
+gnome-backgrounds-extras
+desktop-backgrounds-gnome
+desktop-backgrounds-basic
+f25-backgrounds-base
+f26-backgrounds-base 
+f27-backgrounds-base
+f28-backgrounds-base
+f25-backgrounds-extras-base
+f26-backgrounds-extras-base
+f27-backgrounds-extras-base
+f28-backgrounds-extras-base
+f25-backgrounds-extras-xfce
+f26-backgrounds-extras-xfce
+f27-backgrounds-extras-xfce
+f28-backgrounds-extras-xfce
