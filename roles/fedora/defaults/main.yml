@@ -1,5 +1,5 @@
 virt_domain: "{{ ansible_domain }}"
-aws_elastic_ip: 18.224.94.116
+ocp_public_ip: 127.0.0.1
 fedora_pkgs:
   - krb5-workstation
   - chromium
@@ -15,6 +15,7 @@ fedora_pkgs:
   - patch
   - git
   - ansible
+  - jq
   - docker
   - qemu-kvm
   - libvirt

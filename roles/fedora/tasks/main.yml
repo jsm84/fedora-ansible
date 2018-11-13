@@ -1,15 +1,15 @@
-- name: Setup Chromium for RH SSO
+- name: Setup Chromium for RH Kerberos SSO
   copy:
     src: redhat-corp.json
     dest: /etc/chromium/policies/required/
 
-- name: Configure dnsmasq for libvirt/aws
+- name: Configure dnsmasq for libvirt/ocp
   template:
     src: "{{ item }}.j2"
     dest: "/etc/NetworkManager/dnsmasq.d/{{ item }}"
   with_items:
     - libvirt_dnsmasq.conf
-    - aws_dnsmasq.conf
+    - ocp_dnsmasq.conf
 
 - name: Configure CUPS for BOS/RDU/ORD
   lineinfile:
