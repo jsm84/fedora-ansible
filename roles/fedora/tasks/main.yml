@@ -3,6 +3,11 @@
     src: redhat-corp.json
     dest: /etc/chromium/policies/required/
 
+- name: Configure NetworkManager to use dnsmasq
+  copy:
+    src: localdns.conf
+    dest: /etc/NetworkManager/conf.d/  
+
 - name: Configure dnsmasq for libvirt/ocp
   template:
     src: "{{ item }}.j2"
