@@ -3,3 +3,15 @@
     name: cups
     enabled: yes
     state: restarted
+
+- name: libvirt_destroy_default_net
+  virt_net:
+    name: default
+    command: destroy
+
+- name: libvirt_start_default_net
+  virt_net:
+    name: default
+    command: destroy
+
+

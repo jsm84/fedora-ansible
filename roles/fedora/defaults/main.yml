@@ -9,6 +9,9 @@ fedora_pkgs:
   - inkscape
   - asciidoctor
   - vim
+  - vim-go
+  - vim-golint
+  - vim-X11
   - guake
   - gvfs-mtp
   - rpmconf
@@ -25,14 +28,20 @@ fedora_pkgs:
   - libguestfs-tools
   - libguestfs-bash-completion
   - libguestfs
+  - gcc
+  - gcc-c++
   - golang
   - dep
   - python3
+  - python3-devel #needed for building python3 modules such as operator-courier
   - ruby
   - awscli
-  - python2-boto3
   - python2-boto
+  - python2-boto3
+  - python2-libvirt
   - python3-boto
+  - python3-boto3
+  - python3-libvirt
   - mpg123
   - fedora-workstation-backgrounds
   - gnome-backgrounds-extras
@@ -42,11 +51,14 @@ fedora_pkgs:
   - f26-backgrounds-base
   - f27-backgrounds-base
   - f28-backgrounds-base
+  - f29-backgrounds-base
   - f25-backgrounds-extras-base
   - f26-backgrounds-extras-base
   - f27-backgrounds-extras-base
   - f28-backgrounds-extras-base
+  - f29-backgrounds-extras-base
   - f25-backgrounds-extras-xfce
   - f26-backgrounds-extras-xfce
   - f27-backgrounds-extras-xfce
   - f28-backgrounds-extras-xfce
+  - f29-backgrounds-extras-xfce
