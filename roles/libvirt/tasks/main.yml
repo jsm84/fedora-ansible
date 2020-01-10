@@ -1,0 +1,80 @@
+- name: Configure libvirtd dnsmasq
+  block:
+  - name: Configure NetworkManager to use dnsmasq
+    copy:
+      src: localdns.conf
+      dest: /etc/NetworkManager/conf.d/  
+
+  - name: Configure dnsmasq for libvirt
+    template:
+      src: libvirt_dnsmasq.conf.j2
+      dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+  when:
+  -  libvirt_config_net == true
+
+- name: Install libvirt packages
+  dnf:
+    name: "{{ libvirt_pkgs }}"
+    state: present
+
+- name: Ensure libvirtd is started
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes
+
+- name: Configure libvirt network 
+  block:
+  - name: Get libvirt default net xml
+    virt_net:
+      name: default
+      command: get_xml
+    register: default_xml
+
+  - name: debug default_xml
+    debug:
+      var: default_xml
+
+  - name: Create libvirt default net xml from data
+    copy:
+      content: "{{ default_xml.get_xml }}"
+      dest: ./roles/libvirt/files/libvirt_default_net.xml 
+
+  - name: Add Domain to libvirt default net xml
+    lineinfile:
+      line: "  <domain name='{{ ansible_domain }}' localOnly='yes'/>"
+      dest: ./roles/libvirt/files/libvirt_default_net.xml
+      regexp: '^  <domain.*/>$'
+      insertbefore: '</network>'
+    register: line_added
+
+  - name: debug line_added
+    debug:
+      var: line_added
+
+  - name: stop libvirt default net
+    virt_net:
+      name: default
+      command: destroy
+    when:
+    - line_added.changed==true
+
+  - name: delete libvirt default net
+    virt_net:
+      name: default
+      command: undefine
+    when:
+    - line_added.changed == true
+
+  - name: Configure libvirt default net from xml
+    virt_net:
+      name: default
+      command: define 
+      xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_net.xml')}}"
+    when:
+    - line_added.changed == true
+    notify:
+    - libvirt_start_default_net
+  when: 
+  - libvirt_config_net == true
+

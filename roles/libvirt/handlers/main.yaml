@@ -1,0 +1,7 @@
+---
+- name: libvirt_start_default_net
+  virt_net:
+    name: default
+    command: start
+
+

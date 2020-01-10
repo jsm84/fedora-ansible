@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: libvirt
+    vars:
+      libvirt_config_net: false

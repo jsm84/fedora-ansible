@@ -1,48 +1,51 @@
-install_cloud: true
-install_dev: true
-install_artwork: false
-
-base_pkgs:
-  - ansible
+virt_domain: "{{ ansible_domain }}"
+ocp_public_ip: 127.0.0.1
+fedora_pkgs:
+  - krb5-workstation
   - chromium
   - evolution
-  - gimp
-  - guake
-  - gvfs-mtp
   - hexchat
+  - gimp
   - inkscape
-  - krb5-workstation
-  - mpg123
-  - vim
-  - vim-X11
-
-cloud_pkgs:
-  - awscli
-  - buildah
-  - docker
-  - podman
-  - python3-boto
-  - python3-boto3
-  - python3-operator-courier
-  - skopeo
-
-dev_pkgs:
   - asciidoctor
-  - gcc
-  - gcc-c++
-  - git
-  - golang
-  - jq
-  - patch
-  - python3
-  - python3-devel #needed for building python3 modules such as operator-courier
-  - rpmconf
-  - ruby
+  - vim
   - vim-go
   - vim-golint
+  - vim-X11
+  - guake
+  - gvfs-mtp
+  - rpmconf
+  - patch
+  - git
+  - ansible
+  - jq
   - yamllint
-
-artwork_pkgs:
+  - docker
+  - qemu-kvm
+  - libvirt
+  - libvirt-devel
+  - virt-install
+  - bridge-utils
+  - virt-manager
+  - libguestfs-tools
+  - libguestfs-bash-completion
+  - libguestfs
+  - gcc
+  - gcc-c++
+  - golang
+  - dep
+  - python3
+  - python3-devel #needed for building python3 modules such as operator-courier
+  - python3-boto
+  - python3-boto3
+  - python3-libvirt
+  - python3-lxml
+  - python3-operator-courier
+  - ruby
+  - awscli
+  - mpg123
+  - fedora-workstation-backgrounds
+  - gnome-backgrounds-extras
   - desktop-backgrounds-gnome
   - desktop-backgrounds-basic
   - f25-backgrounds-base
@@ -51,21 +54,15 @@ artwork_pkgs:
   - f28-backgrounds-base
   - f29-backgrounds-base
   - f30-backgrounds-base
-  - f31-backgrounds-base
   - f25-backgrounds-extras-base
   - f26-backgrounds-extras-base
   - f27-backgrounds-extras-base
   - f28-backgrounds-extras-base
   - f29-backgrounds-extras-base
   - f30-backgrounds-extras-base
-  - f31-backgrounds-extras-base
   - f25-backgrounds-extras-xfce
   - f26-backgrounds-extras-xfce
   - f27-backgrounds-extras-xfce
   - f28-backgrounds-extras-xfce
   - f29-backgrounds-extras-xfce
   - f30-backgrounds-extras-xfce
-  - f31-backgrounds-extras-xfce
-  - fedora-workstation-backgrounds
-  - gnome-backgrounds-extras
-

@@ -1,0 +1,33 @@
+- name: Setup Chromium for RH Kerberos SSO
+  copy:
+    src: redhat-corp.json
+    dest: /etc/chromium/policies/managed/
+
+- name: Configure CUPS for BOS/RDU/ORD
+  lineinfile:
+    path: /etc/cups/cups-browsed.conf
+    state: present
+    line: "{{ item }}"
+  notify:
+    - restart cups
+  with_items:
+    - BrowsePoll cups.bos.redhat.com
+    - BrowsePoll cups.ord.redhat.com
+    - BrowsePoll cups.rdu.redhat.com
+
+- name: Install RPMs for RH VPN
+  dnf:
+    name:
+    - ./roles/rhworkstation/files/redhat-internal-cert-install-0.1-9.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-0.1-30.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/bluejeans-1.37.22.x86_64.rpm
+    - ./roles/rhworkstation/files/slack-4.1.2-0.1.fc21.x86_64.rpm
+    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm
+    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/overpass-fonts-3.0.2-1.el7.centos.noarch.rpm
+    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-wireless-config-0.1-18.el7.csb.noarch.rpm
+    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/spotify-client-data-0.9.17.8.gd06432d.31-1.el7.noarch.rpm
+    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-openvpn-profiles-0.1-30.el7.csb.noarch.rpm
+    state: present
+  when:
+  - ansible_connection == 'local'

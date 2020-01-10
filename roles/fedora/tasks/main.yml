@@ -1,103 +1,22 @@
-- name: Setup Chromium for RH Kerberos SSO
-  copy:
-    src: redhat-corp.json
-    dest: /etc/chromium/policies/managed/
-
-- name: Configure NetworkManager to use dnsmasq
-  copy:
-    src: localdns.conf
-    dest: /etc/NetworkManager/conf.d/  
-
-- name: Configure dnsmasq for libvirt/ocp
-  template:
-    src: "{{ item }}.j2"
-    dest: "/etc/NetworkManager/dnsmasq.d/{{ item }}"
-  with_items:
-    - libvirt_dnsmasq.conf
-    - ocp_dnsmasq.conf
-
-- name: Configure CUPS for BOS/RDU/ORD
-  lineinfile:
-    path: /etc/cups/cups-browsed.conf
-    state: present
-    line: "{{ item }}"
-  notify:
-    - restart cups
-  with_items:
-    - BrowsePoll cups.bos.redhat.com
-    - BrowsePoll cups.ord.redhat.com
-    - BrowsePoll cups.rdu.redhat.com
-
-- name: Install RPMs for RH VPN
+---
+- name: Install base packages
   dnf:
-    name:
-    - ./roles/fedora/files/redhat-internal-cert-install-0.1-9.el7.csb.noarch.rpm
-    - ./roles/fedora/files/redhat-internal-NetworkManager-openvpn-profiles-0.1-30.el7.csb.noarch.rpm
-    - ./roles/fedora/files/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm
-    - ./roles/fedora/files/bluejeans-1.37.22.x86_64.rpm
-    - ./roles/fedora/files/slack-3.3.7-0.1.fc21.x86_64.rpm
-    #- http://hdn.corp.redhat.com/rhel7-csb-stage/RPMS/noarch/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-30.el7.csb.noarch.rpm
+    name: "{{ base_pkgs }}"
     state: present
-  when:
-  - ansible_connection == 'local'
 
-- name: Install additional packages
+- name: Install cloud and container tools
   dnf:
-    name: "{{ fedora_pkgs }}"
+    name: "{{ cloud_pkgs }}"
     state: present
 
-- name: Install Docker-Machine-KVM driver
-  #shell: curl -L https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.10.0/docker-machine-driver-kvm-centos7 -o /usr/local/bin/docker-machine-driver-kvm
-  get_url:
-    url: https://github.com/dhiltgen/docker-machine-kvm/releases/download/v0.10.0/docker-machine-driver-kvm-centos7
-    dest: /usr/local/bin/docker-machine-driver-kvm
-    mode: 0755
+- name: Install developer tools and frameworks
+  dnf:
+    name: "{{ dev_pkgs }}"
+    state: present
+  when: install_dev == true
 
-- name: Install Minishift
-  unarchive:
-    src: https://github.com/minishift/minishift/releases/download/v1.31.0/minishift-1.31.0-linux-amd64.tgz
-    dest: /usr/local/bin
-    remote_src: yes
-    extra_opts:
-    - --strip-components=1
-
-- name: Ensure libvirtd is started
-  service:
-    name: libvirtd
-    state: started
-    enabled: yes
-
-- name: Get libvirt default net xml
-  virt_net:
-    name: default
-    command: get_xml
-  register: default_xml
-
-  #- name:
-  #debug:
-  #  var: default_xml
-
-- name: Create libvirt default net xml from data
-  copy:
-    content: "{{ default_xml.get_xml }}"
-    dest: /tmp/libvirt_default_net.xml 
-
-- name: Add Domain to libvirt default net config
-  lineinfile:
-    line: "  <domain name='{{ ansible_domain }}' localOnly='yes'/>"
-    dest: /tmp/libvirt_default_net.xml
-    regexp: '^  <domain.*/>$'
-    insertbefore: '</network>'
-  register: line_added
-
-- name: Configure libvirt-net
-  virt_net:
-    name: default
-    command: define 
-    xml: /tmp/libvirt_default_net.xml
-  when:
-  - line_added.changed == true
-  notify:
-  - libvirt_destroy_default_net
-  - libvirt_start_default_net
-
+- name: Install Fedora artwork
+  dnf:
+    name: "{{ artwork_pkgs }}"
+    state: present
+  when: install_artwork == true

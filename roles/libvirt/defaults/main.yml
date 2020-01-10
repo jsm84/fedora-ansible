@@ -1,0 +1,16 @@
+---
+ansible_become: true
+virt_domain: "{{ ansible_domain }}"
+libvirt_config_net: false
+libvirt_pkgs:
+  - qemu-kvm
+  - libvirt
+  - libvirt-devel
+  - virt-install
+  - bridge-utils
+  - virt-manager
+  - libguestfs-tools
+  - libguestfs-bash-completion
+  - libguestfs
+  - python3-libvirt
+  - python3-lxml

@@ -1,18 +1,3 @@
-- name: Fix libvirt
-  hosts: all
-  tasks:
-    
-  - name: Configure libvirt-net
-    virt_net:
-      name: default
-      command: modify
-      xml: "<domain name='{{ ansible_domain }}' localOnly='yes'/>"
-    notify:
-    - net destroy
-
-  handlers:
-
-  - name: net destroy
-    virt_net:
-      name: default
-      command: destroy
+- hosts: all
+  roles:
+    - { role: libvirt, vars: { libvirt_config_net: true } }
