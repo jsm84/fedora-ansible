@@ -36,8 +36,14 @@ A breakdown of the playbook and role format is below:
 | *fedora-ansible/roles/minikube/*                | Minkube role that installs a minikube cluster on the Fedora host (optional)
 | *fedora-ansible/roles/libvirt/*                 | Libvirt/KVM role installs libvirt (required for minikube) and configures libvirt networking and dns (optional)
 
-### Known Issues
+### TODO
 The following items are either issues that are known to exist or features that are currently lacking:
 
+* Need to add optional RPM Fusion repo setup, and also related multimedia codecs (required for BlueJeans Live) and/or nvidia driver installation
+* Possibly deprecate/remove Evolution email client in favor of GMail web app
+* Remove cruft like Claws, Catfish and Pidgin that get install as base Xfce Apps
 * The current user isn't added to the `libvirt` group for access to things like `virt-manager`.
 * Libvirt network configuration *breaks DNS resolution* on hosts without a properly formatted FQDN (hostname.example.local or hostname.example.com *not* hostname.local or hostname.example).
+* Libvirt network configuration isn't fully implemented (see above)
+* Optionally configure a share in /home as the default libvirt storage pool (instead of `/var/lib/libvirt/images`)
+
