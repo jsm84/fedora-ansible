@@ -24,6 +24,8 @@ cloud_pkgs:
   - python3-boto
   - python3-boto3
   - python3-operator-courier
+  - python3-kubernetes
+  - python3-openshift
   - skopeo
 
 dev_pkgs:
