@@ -1,0 +1,10 @@
+*.bak
+*.conf
+*.crt
+*.info
+*.json
+*.retry
+*.rpm
+*.tgz
+*.xml
+*.zip

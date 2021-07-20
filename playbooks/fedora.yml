@@ -1,0 +1,20 @@
+# This installs the essential developer and container tools, missing multimedia codecs (RPM Fusion) and artwork. 
+# You must run this playbook with the "become" flag in order to provide sudo privileges.
+#
+# Set the variables below according to preference. Artwork and codecs default to disabled per user feedback.
+#
+# To run locally, add "localhost ansible_connection=local" to your hosts inventory and run:
+# ansible-playbook -bK -i hosts playbooks/fedora.yml
+#
+# To run remotely, make sure your remote machines are setup in your hosts inventory and run:
+# ansible-playbook -bkKu <username> -i hosts playbooks/fedora.yml
+
+- hosts: all
+  roles:
+    - role: fedora
+      vars:
+        install_base: true
+        install_cloud: true
+        install_devel: true
+        install_artwork: false
+        install_codecs: false

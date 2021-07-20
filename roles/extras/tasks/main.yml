@@ -1,0 +1,85 @@
+- name: Install Steam and Wine
+  dnf:
+    name: 
+      - steam 
+      - wine
+    state: present
+  become: true
+
+- name: Install Gaming Hardware Drivers and Utilities
+  block:
+  - name: Get list of Graphics Adapters
+    shell: lspci | grep VGA
+    register: vga_devices
+
+  - name: Install NVIDIA drivers
+    dnf:
+      name: nvidia-driver
+      state: present
+    when: '"NVIDIA" in vga_devices.stdout'
+
+  - name: Get list of USB Devices
+    shell: lsusb
+    register: usb_devices
+
+  - name: Download OpenRazer DNF Repo
+    get_url:
+      url: https://download.opensuse.org/repositories/hardware:razer/Fedora_33/hardware:razer.repo
+      dest: /etc/yum.repos.d/hardware:razer.repo
+      owner: root
+    when: '"Corsair" in usb_devices.stdout or "Razer" in usb_devices.stdout'
+
+  #- name: Enable OpenRazer DNF Repo
+    #yum_repository:
+      #name: hardware_razer
+      #description: hardware:razer (Fedora_33)
+      #file: hardware:razer
+      #metalink: https://download.opensuse.org/repositories/hardware:/razer/Fedora_33/repodata/repomd.xml
+      #gpgcheck: yes
+      #gpgkey: https://download.opensuse.org/repositories/hardware:/razer/Fedora_33/repodata/repomd.xml.key
+      #enabled: yes
+
+  - name: Install Corsair Utilities
+    dnf:
+      name:
+      - ckb-next
+      state: present
+    when: '"Corsair" in usb_devices.stdout'
+
+  - name: Install Razer Utilities
+    block:
+    - name: Install OpenRazer and Polychromatic GUI
+      dnf:
+        name:
+        - openrazer-meta
+        - polychromatic
+        state: present
+
+    - name: Create the plugdev group
+      group:
+        name: plugdev
+        state: present
+          
+    - name: Add current user to the plugdev group
+      user:
+        name: "{{ ansible_user_id }}"
+        groups: plugdev
+        append: yes
+    when: '"Razer" in usb_devices.stdout'
+  become: true
+  when: install_drivers | bool == true
+
+- name: Install USENET tools
+  block:
+  - name: Install NuxRef Repository
+    dnf:
+      name: http://repo.nuxref.com/fedora/fc{{ ansible_distribution_version }}/en/x86_64/custom/nuxref-release-1.0.0-5.fc{{ ansible_distribution_version }}.nuxref.noarch.rpm
+      state: present
+      disable_gpg_check: yes
+
+  - name: Install SABnzbd
+    dnf:
+      name: sabnzbd
+      state: present
+  become: true
+  when: install_usenet | bool == true

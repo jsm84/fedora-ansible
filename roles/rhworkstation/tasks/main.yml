@@ -1,0 +1,36 @@
+- name: Setup Chromium for legacy RH Kerberos SSO
+  copy:
+    src: redhat-corp.json
+    dest: /etc/chromium/policies/managed/
+ 
+- name: Install RH IPA cert
+  copy:
+    src: ca.crt
+    dest: /etc/ipa/
+
+- name: Configure Kerberos for RH IPA
+  copy:
+    src: redhat-idm.conf
+    dest: /etc/krb5.conf.d/
+
+- name: Configure CUPS for RH Campuses
+  copy:
+    src: cups-browsed.conf
+    dest: /etc/cups/
+  notify:
+    - restart cups
+
+- name: Install RPMs for RH VPN
+  dnf:
+    name:
+    - ./roles/rhworkstation/files/redhat-internal-cert-install-0.1-23.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-0.1-51.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-51.el7.csb.noarch.rpm
+    - ./roles/rhworkstation/files/BlueJeans_2.22.0.87.rpm
+    - ./roles/rhworkstation/files/slack-4.17.0-0.1.fc21.x86_64.rpm
+    - ./roles/rhworkstation/files/teams-1.4.00.7556-1.x86_64.rpm
+    - ./roles/rhworkstation/files/zoom_x86_64.rpm
+    state: present
+    disable_gpg_check: true
+  when:
+  - ansible_connection == 'local'

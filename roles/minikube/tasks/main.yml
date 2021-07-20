@@ -1,0 +1,18 @@
+- name: Install Docker-Machine-KVM2 driver
+  #shell: curl -L https://github.com/kubernetes/minikube/releases/download/v1.1.1/docker-machine-driver-kvm2 -o $HOME/bin/docker-machine-driver-kvm2
+  get_url:
+    url: https://github.com/kubernetes/minikube/releases/download/v1.16.0/docker-machine-driver-kvm2
+    dest: /home/{{ ansible_user_id }}/bin/docker-machine-driver-kvm2
+    mode: 0750
+
+- name: Install Minikube
+  get_url:
+    url: https://github.com/kubernetes/minikube/releases/download/v1.16.0/minikube-linux-amd64
+    dest: /home/{{ ansible_user_id }}/bin/minikube
+    mode: 0750
+
+- name: Install Kubectl
+  get_url:
+    url: https://storage.googleapis.com/kubernetes-release/release/v1.19.2/bin/linux/amd64/kubectl
+    dest: /home/{{ ansible_user_id }}/bin/kubectl
+    mode: 0750

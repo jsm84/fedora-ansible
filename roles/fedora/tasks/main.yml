@@ -1,0 +1,52 @@
+---
+- name: Install base packages
+  dnf:
+    name: "{{ base_pkgs }}"
+    state: present
+  when: install_base | bool
+
+- name: Install cloud and container tools
+  dnf:
+    name: "{{ cloud_pkgs }}"
+    state: present
+  when: install_cloud | bool
+
+- name: Install developer tools and frameworks
+  dnf:
+    name: "{{ devel_pkgs }}"
+    state: present
+  when: install_devel | bool
+
+- name: Install Fedora artwork
+  dnf:
+    name: "{{ artwork_pkgs }}"
+    state: present
+  when: install_artwork | bool
+
+- name: Enable RPM Fusion multimedia packages
+  block:
+  - name: Install RPM Fusion repos
+    dnf:
+      name: "{{ rpmfusion_pkgs }}"
+      state: present
+      disable_gpg_check: true
+
+  - name: Install multimedia codecs
+    dnf:
+      name: '@Multimedia'
+      state: present
+  
+  # Chromium-freeworld crashes every time starting with version 89.0.4389.114-1 (possibly due to Google API key revocation?)
+  # Reverting to Chromium from Fedora standard repository
+
+  #- name: Install chromium-freeworld
+  #   dnf:
+  #    name: chromium-freeworld
+  #    state: present
+
+  #- name: Disable Fedora Chromium package (replaced by chromium-freeworld)
+  #  dnf:
+  #    name: chromium
+  #    state: absent
+  
+  when: install_codecs | bool

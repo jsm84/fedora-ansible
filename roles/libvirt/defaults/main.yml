@@ -1,0 +1,17 @@
+---
+configure_network: false
+configure_storage: false
+libvirt_pkgs:
+  - bridge-utils
+  - libvirt
+  - libvirt-devel
+  - libguestfs-tools
+  - libguestfs-bash-completion
+  - libguestfs
+  - python3-libvirt
+  - python3-lxml
+  - qemu-kvm
+  - qemu-user-static # for non-x86 cpu emulation
+  - virt-install
+  - virt-manager
+vm_storage_dir: /home/libvirt/images

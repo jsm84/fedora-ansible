@@ -1,0 +1,11 @@
+# This playbook installs essential work related tools, but requires the packages to be accessible locally or from VPN.
+# Run this with the "become" flag set to enable sudo privileges. There are no tunable options.
+#
+# To run locally, add "localhost ansible_connection=local" to your hosts inventory and:
+# ansible-playbook -bK -i hosts playbooks/rhworkstation.yml
+#
+# Running this remotely is not intended due to omitted rpm content
+
+- hosts: all
+  roles:
+    - rhworkstation

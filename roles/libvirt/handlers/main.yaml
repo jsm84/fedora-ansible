@@ -1,0 +1,12 @@
+---
+- name: start_default_net
+  virt_net:
+    name: default
+    command: start
+
+- name: start_default_pool
+  virt_pool:
+    name: default
+    command: start
+
+

@@ -1,0 +1,168 @@
+- name: Fail if host domain name is set improperly
+  assert:
+    that:
+    - ansible_domain | regex_search('^[0-9a-z]([-0-9a-z]*[0-9a-z])?(\.[0-9a-z]([-0-9a-z]*[0-9a-z])?)+$')
+
+- name: Configure libvirtd dnsmasq
+  block:
+  - name: Configure NetworkManager to use dnsmasq
+    copy:
+      src: localdns.conf
+      dest: /etc/NetworkManager/conf.d/
+
+  - name: Configure dnsmasq for libvirt
+    template:
+      src: libvirt_dnsmasq.conf.j2
+      dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+  become: true
+  when:
+  - configure_network | bool == true
+
+- name: Install libvirt packages
+  dnf:
+    name: "{{ libvirt_pkgs }}"
+    state: present
+  become: true
+
+- name: Add current user to the libvirt group
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: libvirt
+    append: yes
+  become: true
+
+- name: Ensure libvirtd is started
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes
+  become: true
+
+- name: Configure libvirt default network
+  block:
+  - name: Get libvirt default network config
+    virt_net:
+      name: default
+      command: get_xml
+    register: default_net
+
+  - name: debug default_net
+    debug:
+      var: default_net
+
+  - name: Create libvirt default net xml from data
+    copy:
+      content: "{{ default_net.get_xml }}"
+      dest: ./roles/libvirt/files/libvirt_default_net.xml
+
+  - name: Add Domain to libvirt default net xml
+    lineinfile:
+      line: "  <domain name='{{ ansible_domain }}' localOnly='yes'/>"
+      dest: ./roles/libvirt/files/libvirt_default_net.xml
+      regexp: "^  <domain.*/>$"
+      insertbefore: '</network>'
+    register: net_domain
+
+  - name: debug net_domain
+    debug:
+      var: net_domain
+
+  - name: stop libvirt default net
+    virt_net:
+      name: default
+      command: destroy
+    when:
+    - net_domain.changed == true
+
+  - name: delete libvirt default net
+    virt_net:
+      name: default
+      command: undefine
+    when:
+    - net_domain.changed == true
+
+  - name: Configure libvirt default net from xml
+    virt_net:
+      name: default
+      command: define
+      xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_net.xml')}}"
+    when:
+    - net_domain.changed == true
+    notify:
+    - start_default_net
+  become: true
+  when:
+  - configure_network | bool == true
+
+- name: Configure libvirt default storage pool
+  block:
+  - name: Create storage pool directory for VMs
+    file:
+      path: "{{ vm_storage_dir }}"
+      group: libvirt
+      mode: 02770
+      state: directory
+
+  - name: Gather contents of new storage pool dir
+    find:
+      path: "{{ vm_storage_dir }}"
+      file_type: file
+    register: images_list
+
+  - name: Apply proper permissions to VM images
+    file:
+      path: "{{ item.path }}"
+      group: libvirt
+      mode: 0770
+    with_items: "{{ images_list.files }}"
+
+  - name: Get default storage pool config
+    virt_pool:
+      name: default
+      command: get_xml
+    register: default_pool
+
+  - name: Create libvirt default pool from data
+    copy:
+      content: "{{ default_pool.get_xml }}"
+      dest: ./roles/libvirt/files/libvirt_default_pool.xml
+
+  - name: Change path in libvirt default pool xml
+    lineinfile:
+      line: "    <path>{{ vm_storage_dir }}</path>"
+      dest: ./roles/libvirt/files/libvirt_default_pool.xml
+      regexp: '^    <path>.*</path>$'
+      insertbefore: '</target>'
+    register: storage_path
+
+  - name: debug path_changed
+    debug:
+      var: storage_path
+
+  - name: stop libvirt default pool
+    virt_pool:
+      name: default
+      command: destroy
+    when:
+    - storage_path.changed == true
+
+  - name: delete libvirt default net
+    virt_pool:
+      name: default
+      command: undefine
+    when:
+    - storage_path.changed == true
+
+  - name: Configure libvirt default pool from xml
+    virt_pool:
+      name: default
+      command: define
+      xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_pool.xml')}}"
+    when:
+    - storage_path.changed == true
+    notify:
+    - start_default_pool
+  become: true
+  when:
+  - configure_storage | bool == true
+    

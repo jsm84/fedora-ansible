@@ -1,0 +1,16 @@
+# This playbook installs and configures libvirt and virt-manager.
+# Don't use the "become" flag with this playbook, or your user account won't get added to the plugdev group.
+# Set the variables below according to preference, but I recommend to enable both
+#
+# To run locally, define "localhost ansible_connection=local" in your hosts inventory and run:
+# ansible-playbook -K -i hosts playbooks/extras.yml
+#
+# To run remotely, define your remote machines in your hosts inventory and run:
+# ansible-playbook -ku <username> -i hosts playbooks/extras.yml
+
+- hosts: all
+  roles:
+    - role: libvirt
+      vars:
+        configure_network: true
+        configure_storage: true 
