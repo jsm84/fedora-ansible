@@ -10,6 +10,7 @@
 # ansible-playbook -bkKu <username> -i hosts playbooks/fedora.yml
 
 - hosts: all
+  become: true
   roles:
     - role: fedora
       vars:

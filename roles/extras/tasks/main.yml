@@ -69,17 +69,19 @@
   become: true
   when: install_drivers | bool == true
 
-- name: Install USENET tools
-  block:
-  - name: Install NuxRef Repository
-    dnf:
-      name: http://repo.nuxref.com/fedora/fc{{ ansible_distribution_version }}/en/x86_64/custom/nuxref-release-1.0.0-5.fc{{ ansible_distribution_version }}.nuxref.noarch.rpm
-      state: present
-      disable_gpg_check: yes
+    # The NuxRef Repos fails to install as it's not yet released for Fedora 34 (as of August 2021)
+    #
+    #- name: Install USENET tools
+    #block:
+    #  - name: Install NuxRef Repository
+    #    dnf:
+    #      name: http://repo.nuxref.com/fedora/fc{{ ansible_distribution_version }}/en/x86_64/custom/nuxref-release-1.0.0-5.fc{{ ansible_distribution_version }}.nuxref.noarch.rpm
+    #      state: present
+    #      disable_gpg_check: yes
 
-  - name: Install SABnzbd
-    dnf:
-      name: sabnzbd
-      state: present
-  become: true
-  when: install_usenet | bool == true
+    #  - name: Install SABnzbd
+    #    dnf:
+    #      name: sabnzbd
+    #      state: present
+    #  become: true
+    #  when: install_usenet | bool == true

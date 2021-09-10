@@ -1,0 +1,12 @@
+- name: Download CodeReady Containers
+  get_url: 
+    url: http://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz
+    dest: "{{ ansible_user_dir }}/Downloads/crc-linux-amd64.tar.xz"
+
+- name: Extract crc archive
+  unarchive: 
+    src: "{{ ansible_user_dir }}/Downloads/crc-linux-amd64.tar.xz"
+    dest: "{{ crc_dest_dir }}"
+    exclude: "*/LICENSE"
+    extra_opts:
+    - --strip-components=1

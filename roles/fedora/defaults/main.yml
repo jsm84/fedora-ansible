@@ -1,8 +1,10 @@
+lenovo_pmfix: true
 install_base: true
 install_cloud: true
 install_devel: true
 install_artwork: false
 install_codecs: false
+install_chrome: false
 
 base_pkgs:
   - ansible

@@ -1,13 +1,15 @@
 ---
+enable_debug: false
 configure_network: false
 configure_storage: false
 libvirt_pkgs:
   - bridge-utils
   - libvirt
   - libvirt-devel
-  - libguestfs-tools
-  - libguestfs-bash-completion
   - libguestfs
+  - libguestfs-bash-completion
+  - guestfs-tools
+  - guestfs-tools-bash-completion
   - python3-libvirt
   - python3-lxml
   - qemu-kvm

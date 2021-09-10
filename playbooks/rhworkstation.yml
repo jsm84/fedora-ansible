@@ -7,5 +7,6 @@
 # Running this remotely is not intended due to omitted rpm content
 
 - hosts: all
+  become: true
   roles:
     - rhworkstation

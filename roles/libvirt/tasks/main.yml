@@ -15,8 +15,7 @@
       src: libvirt_dnsmasq.conf.j2
       dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
   become: true
-  when:
-  - configure_network | bool == true
+  when: configure_network | bool
 
 - name: Install libvirt packages
   dnf:
@@ -49,6 +48,7 @@
   - name: debug default_net
     debug:
       var: default_net
+    when: enable_debug | bool
 
   - name: Create libvirt default net xml from data
     copy:
@@ -66,39 +66,37 @@
   - name: debug net_domain
     debug:
       var: net_domain
+    when: enable_debug | bool
 
   - name: stop libvirt default net
     virt_net:
       name: default
       command: destroy
-    when:
-    - net_domain.changed == true
+    when: net_domain.changed
 
   - name: delete libvirt default net
     virt_net:
       name: default
       command: undefine
-    when:
-    - net_domain.changed == true
+    when: net_domain.changed
 
   - name: Configure libvirt default net from xml
     virt_net:
       name: default
       command: define
       xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_net.xml')}}"
-    when:
-    - net_domain.changed == true
+    when: net_domain.changed
     notify:
     - start_default_net
   become: true
-  when:
-  - configure_network | bool == true
+  when: configure_network | bool
 
 - name: Configure libvirt default storage pool
   block:
   - name: Create storage pool directory for VMs
     file:
       path: "{{ vm_storage_dir }}"
+      owner: qemu
       group: libvirt
       mode: 02770
       state: directory
@@ -112,6 +110,7 @@
   - name: Apply proper permissions to VM images
     file:
       path: "{{ item.path }}"
+      owner: qemu
       group: libvirt
       mode: 0770
     with_items: "{{ images_list.files }}"
@@ -138,31 +137,28 @@
   - name: debug path_changed
     debug:
       var: storage_path
+    when: enable_debug | bool
 
   - name: stop libvirt default pool
     virt_pool:
       name: default
       command: destroy
-    when:
-    - storage_path.changed == true
+    when: storage_path.changed
 
   - name: delete libvirt default net
     virt_pool:
       name: default
       command: undefine
-    when:
-    - storage_path.changed == true
+    when: storage_path.changed
 
   - name: Configure libvirt default pool from xml
     virt_pool:
       name: default
       command: define
       xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_pool.xml')}}"
-    when:
-    - storage_path.changed == true
+    when: storage_path.changed
     notify:
     - start_default_pool
   become: true
-  when:
-  - configure_storage | bool == true
+  when: configure_storage | bool
     

@@ -1,4 +1,12 @@
 ---
+# Fix an issue on certain laptops where suspend occurs when booting 
+# with the lid closed while docked and/or plugged in (forever reboot)
+- name: Fix systemd closed-lid laptop pwr mgmt
+  lineinfile:
+    path: /etc/systemd/logind.conf
+    line: "HandleLidSwitchExternalPower=ignore"
+  when: lenovo_pmfix | bool
+
 - name: Install base packages
   dnf:
     name: "{{ base_pkgs }}"
@@ -23,30 +31,53 @@
     state: present
   when: install_artwork | bool
 
-- name: Enable RPM Fusion multimedia packages
+- name: Enable RPM Fusion (including non-free) multimedia codecs
   block:
+  - name: Import RPM Fusion (free) GPG Key
+    rpm_key:
+      key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-free-fedora-2020
+      fingerprint: E9A4 91A3 DE24 7814 E7E0 67EA E06F 8ECD D651 FF2E
+
+  - name: Import RPM Fusion (non-free) GPG Key
+    rpm_key:
+      key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
+      fingerprint: 79BD B88F 9BBF 7391 0FD4 095B 6A2A F961 9484 3C65
+
   - name: Install RPM Fusion repos
     dnf:
       name: "{{ rpmfusion_pkgs }}"
       state: present
-      disable_gpg_check: true
 
   - name: Install multimedia codecs
     dnf:
       name: '@Multimedia'
       state: present
   
-  # Chromium-freeworld crashes every time starting with version 89.0.4389.114-1 (possibly due to Google API key revocation?)
-  # Reverting to Chromium from Fedora standard repository
+  # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing:
+  # - crashes every time with version 89.0.4389.114-1 (possibly due to Google API key revocation?)
+  # - version 90.0.x seems to fix crashing
+  - name: Install chromium-freeworld
+    dnf:
+      name: chromium-freeworld
+      state: present
+    when: not install_chrome | bool
 
-  #- name: Install chromium-freeworld
-  #   dnf:
-  #    name: chromium-freeworld
-  #    state: present
-
-  #- name: Disable Fedora Chromium package (replaced by chromium-freeworld)
-  #  dnf:
-  #    name: chromium
-  #    state: absent
-  
+  - name: Disable Fedora Chromium package (replaced by chromium-freeworld)
+    dnf:
+      name: chromium
+      state: absent
+    when: not install_chrome | bool
   when: install_codecs | bool
+
+- name: Install Google Chrome  
+  block:
+  - name: Import Google Linux GPG Key
+    rpm_key:
+      key: https://dl.google.com/linux/linux_signing_key.pub
+      fingerprint: 4CCA 1EAF 950C EE4A B839 76DC A040 830F 7FAC 5991
+
+  - name: Download and install Google Chrome RPM
+    dnf:
+      name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
+      state: present
+  when: install_chrome | bool

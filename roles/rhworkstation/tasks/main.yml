@@ -2,6 +2,12 @@
   copy:
     src: redhat-corp.json
     dest: /etc/chromium/policies/managed/
+
+- name: Create Chrome symlink for Kerberos SSO
+  file:
+    src: /etc/chromium
+    path: /etc/opt/chrome
+    state: link
  
 - name: Install RH IPA cert
   copy:
