@@ -1,7 +1,7 @@
 ---
 # Fix an issue on certain laptops where suspend occurs when booting 
 # with the lid closed while docked and/or plugged in (forever reboot)
-- name: Fix systemd closed-lid laptop pwr mgmt
+- name: Disable systemd laptop lid-close power mgmt
   lineinfile:
     path: /etc/systemd/logind.conf
     line: "HandleLidSwitchExternalPower=ignore"
@@ -27,8 +27,10 @@
 
 - name: Install Fedora artwork
   dnf:
-    name: "{{ artwork_pkgs }}"
+    name: f{{ item }}-backgrounds-base,f{{ item }}-backgrounds-extras-base,f{{ item }}-backgrounds-extras-gnome,f{{ item }}-backgrounds-extras-xfce
     state: present
+  with_items:
+  - "{{ query('sequence', 'start=21 end={{ ansible_distribution_version }}') }}"
   when: install_artwork | bool
 
 - name: Enable RPM Fusion (including non-free) multimedia codecs
@@ -53,9 +55,7 @@
       name: '@Multimedia'
       state: present
   
-  # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing:
-  # - crashes every time with version 89.0.4389.114-1 (possibly due to Google API key revocation?)
-  # - version 90.0.x seems to fix crashing
+  # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing versus fedora chromium:
   - name: Install chromium-freeworld
     dnf:
       name: chromium-freeworld
@@ -81,3 +81,9 @@
       name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
       state: present
   when: install_chrome | bool
+
+- name: Install Digital Audio Workstation
+  dnf:
+    name: "{{ daw_pkgs }}"
+    state: present
+  when: install_daw | bool

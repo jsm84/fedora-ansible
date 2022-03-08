@@ -24,20 +24,10 @@
 
   - name: Download OpenRazer DNF Repo
     get_url:
-      url: https://download.opensuse.org/repositories/hardware:razer/Fedora_33/hardware:razer.repo
+      url: https://download.opensuse.org/repositories/hardware:razer/Fedora_{{ ansible_distribution_version }}/hardware:razer.repo
       dest: /etc/yum.repos.d/hardware:razer.repo
       owner: root
     when: '"Corsair" in usb_devices.stdout or "Razer" in usb_devices.stdout'
-
-  #- name: Enable OpenRazer DNF Repo
-    #yum_repository:
-      #name: hardware_razer
-      #description: hardware:razer (Fedora_33)
-      #file: hardware:razer
-      #metalink: https://download.opensuse.org/repositories/hardware:/razer/Fedora_33/repodata/repomd.xml
-      #gpgcheck: yes
-      #gpgkey: https://download.opensuse.org/repositories/hardware:/razer/Fedora_33/repodata/repomd.xml.key
-      #enabled: yes
 
   - name: Install Corsair Utilities
     dnf:
@@ -69,19 +59,35 @@
   become: true
   when: install_drivers | bool == true
 
-    # The NuxRef Repos fails to install as it's not yet released for Fedora 34 (as of August 2021)
-    #
-    #- name: Install USENET tools
-    #block:
-    #  - name: Install NuxRef Repository
-    #    dnf:
-    #      name: http://repo.nuxref.com/fedora/fc{{ ansible_distribution_version }}/en/x86_64/custom/nuxref-release-1.0.0-5.fc{{ ansible_distribution_version }}.nuxref.noarch.rpm
-    #      state: present
-    #      disable_gpg_check: yes
+- name: Install USENET tools
+  block:
+  - name: install sabnzbd deps
+    dnf:
+      name:
+      - python3-wheel
+      - python3-cheetah
+      - python3-guessit
+      - python3-cherrypy
+      - python3-configobj
+      - python3-feedparser
+      - par2cmdline
+      - unrar
 
-    #  - name: Install SABnzbd
-    #    dnf:
-    #      name: sabnzbd
-    #      state: present
-    #  become: true
-    #  when: install_usenet | bool == true
+  - name: install sabyenc3 python module
+    pip:
+      name: sabyenc3
+      state: present
+
+  - name: clone SABnzbd git repo in into /usr/local/src
+    git:
+      repo: https://github.com/sabnzbd/sabnzbd
+      dest: /usr/local/src/sabnzbd
+
+  - name: create script to launch sabnzbd
+    copy:
+      src: ./roles/extras/files/sabnzbd
+      dest: /usr/local/bin/sabnzbd
+      mode: 0755
+
+  become: true
+  when: install_usenet | bool == true

@@ -3,19 +3,20 @@
     that:
     - ansible_domain | regex_search('^[0-9a-z]([-0-9a-z]*[0-9a-z])?(\.[0-9a-z]([-0-9a-z]*[0-9a-z])?)+$')
 
-- name: Configure libvirtd dnsmasq
-  block:
-  - name: Configure NetworkManager to use dnsmasq
-    copy:
-      src: localdns.conf
-      dest: /etc/NetworkManager/conf.d/
+# This part needs updating for systemd-resolved, which is used since F33
+#- name: Configure libvirtd dnsmasq
+#  block:
+#  - name: Configure NetworkManager to use dnsmasq
+#    copy:
+#      src: localdns.conf
+#      dest: /etc/NetworkManager/conf.d/
 
-  - name: Configure dnsmasq for libvirt
-    template:
-      src: libvirt_dnsmasq.conf.j2
-      dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
-  become: true
-  when: configure_network | bool
+#  - name: Configure dnsmasq for libvirt
+#    template:
+#      src: libvirt_dnsmasq.conf.j2
+#      dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
+#  become: true
+#  when: configure_network | bool
 
 - name: Install libvirt packages
   dnf:
@@ -161,4 +162,9 @@
     - start_default_pool
   become: true
   when: configure_storage | bool
-    
+
+- name: Install vagrant
+  dnf:
+    name: vagrant
+    state: present
+  when: install_vagrant | bool

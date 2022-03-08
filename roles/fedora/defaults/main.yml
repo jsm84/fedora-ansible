@@ -5,6 +5,7 @@ install_devel: true
 install_artwork: false
 install_codecs: false
 install_chrome: false
+install_daw: false
 
 base_pkgs:
   - ansible
@@ -23,7 +24,6 @@ base_pkgs:
 cloud_pkgs:
   - awscli
   - buildah  
-  #- docker # replaced by podman
   - openscap
   - openscap-python3
   - openscap-scanner
@@ -35,11 +35,13 @@ cloud_pkgs:
   - python3-operator-courier
   - python3-kubernetes
   - python3-openshift
-  - python3-psutil #needed for ansible operator
+  - python3-psutil
   - skopeo
 
 devel_pkgs:
   - asciidoctor
+  - btrfs-progs-devel
+  - device-mapper-devel
   - fdupes
   - gcc
   - gcc-c++
@@ -49,49 +51,37 @@ devel_pkgs:
   - jq
   - patch
   - python3
-  - python3-devel #needed for building python3 modules such as operator-courier
+  - python3-devel
   - rpmconf
   - ruby
   - vim-go
   - vim-golint
   - yamllint
 
-artwork_pkgs:
-  - cairo-dock
-  - desktop-backgrounds-gnome
-  - desktop-backgrounds-basic
-  - f25-backgrounds-base
-  - f26-backgrounds-base
-  - f27-backgrounds-base
-  - f28-backgrounds-base
-  - f29-backgrounds-base
-  - f30-backgrounds-base
-  - f31-backgrounds-base
-  - f32-backgrounds-base
-  - f33-backgrounds-base
-  - f34-backgrounds-base
-  - f25-backgrounds-extras-base
-  - f26-backgrounds-extras-base
-  - f27-backgrounds-extras-base
-  - f28-backgrounds-extras-base
-  - f29-backgrounds-extras-base
-  - f30-backgrounds-extras-base
-  - f31-backgrounds-extras-base
-  - f32-backgrounds-extras-base
-  - f33-backgrounds-extras-base
-  - f34-backgrounds-extras-base
-  - f25-backgrounds-extras-xfce
-  - f26-backgrounds-extras-xfce
-  - f27-backgrounds-extras-xfce
-  - f28-backgrounds-extras-xfce
-  - f29-backgrounds-extras-xfce
-  - f30-backgrounds-extras-xfce
-  - f31-backgrounds-extras-xfce
-  - f32-backgrounds-extras-xfce
-  - f33-backgrounds-extras-xfce
-  - f34-backgrounds-extras-xfce
-  - fedora-workstation-backgrounds
-  - gnome-backgrounds-extras
+daw_pkgs:
+  - audacious
+  - audacity
+  - cadence
+  - calf-plugins
+  - fluid-soundfont-gm
+  - fluid-soundfont-gs
+  - guitarix
+  - jalv
+  - ladspa-swh-plugins
+  - lv2-devel
+  - lv2-drumkv1
+  - lv2-guitarix-plugins
+  - lv2-samplv1
+  - lv2-swh-plugins
+  - lv2-synthv1
+  - qjackctl
+  - qmidiarp
+  - qtractor
+  - radium-compressor
+  - vmpk
+  - yoshimi
+  - zam-plugins
+  - zynaddsubfx
 
 rpmfusion_pkgs:
   - https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm

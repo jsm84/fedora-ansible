@@ -1,2 +1,5 @@
 install_drivers: false
 install_usenet: false
+
+missing_steam_libs:
+- libbz2.i686

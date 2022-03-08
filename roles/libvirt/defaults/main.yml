@@ -2,6 +2,7 @@
 enable_debug: false
 configure_network: false
 configure_storage: false
+install_vagrant: false
 libvirt_pkgs:
   - bridge-utils
   - libvirt
