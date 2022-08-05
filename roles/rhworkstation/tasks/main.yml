@@ -8,7 +8,7 @@
     src: /etc/chromium
     path: /etc/opt/chrome
     state: link
- 
+
 - name: Install RH IPA cert
   copy:
     src: ca.crt
@@ -32,11 +32,38 @@
     - ./roles/rhworkstation/files/redhat-internal-cert-install-0.1-23.el7.csb.noarch.rpm
     - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-0.1-51.el7.csb.noarch.rpm
     - ./roles/rhworkstation/files/redhat-internal-NetworkManager-openvpn-profiles-non-gnome-0.1-51.el7.csb.noarch.rpm
-    - ./roles/rhworkstation/files/BlueJeans_2.22.0.87.rpm
-    - ./roles/rhworkstation/files/slack-4.17.0-0.1.fc21.x86_64.rpm
-    - ./roles/rhworkstation/files/teams-1.4.00.7556-1.x86_64.rpm
+    - ./roles/rhworkstation/files/BlueJeans_2.27.0.130.rpm
+    - ./roles/rhworkstation/files/slack-4.23.0-0.1.fc21.x86_64.rpm
+    - ./roles/rhworkstation/files/teams-1.4.00.26453-1.x86_64.rpm
     - ./roles/rhworkstation/files/zoom_x86_64.rpm
     state: present
     disable_gpg_check: true
   when:
   - ansible_connection == 'local'
+
+- name: Configure Podman to use ISV container signing key
+  get_url:
+    url: https://www.redhat.com/security/data/55A34A82.txt
+    dest: /etc/pki/rpm-gpg/ISV-Container-Signing-Key
+    checksum: sha256:e90533f8907e14f417c4ab3761425a6d6f36074aa2d174ea6507320c5f62e6e0
+
+- name: Load vars from containers policy.json
+  include_vars:
+    file: /etc/containers/policy.json
+    name: containers_policy
+
+- debug:
+    var: containers_policy
+
+- name: Append ISV key to containers policy.json for certified
+  set_fact:
+    containers_policy: "{{ containers_policy | default([]) | combine({'transports':{'docker':{'registry.redhat.io/redhat/certified-operator-index':[{'type':'signedBy','keyType':'GPGKeys','keyPath':'/etc/pki/rpm-gpg/ISV-Container-Signing-Key'}]}}}, recursive=True) }}"
+
+- name: Append ISV key to containers policy.json for marketplace
+  set_fact:
+    containers_policy: "{{ containers_policy | default([]) | combine({'transports':{'docker':{'registry.redhat.io/redhat/redhat-marketplace-index':[{'type':'signedBy','keyType':'GPGKeys','keyPath':'/etc/pki/rpm-gpg/ISV-Container-Signing-Key'}]}}}, recursive=True) }}"
+
+- name: write var to test file
+  copy:
+    content: "{{ containers_policy | to_nice_json }}"
+    dest: /etc/containers/policy.json

@@ -9,7 +9,6 @@ install_daw: false
 
 base_pkgs:
   - ansible
-  - chromium
   - evolution
   - gimp
   - guake
@@ -23,13 +22,14 @@ base_pkgs:
 
 cloud_pkgs:
   - awscli
-  - buildah  
+  - buildah
   - openscap
   - openscap-python3
   - openscap-scanner
   - openscap-utils
   - scap-security-guide
   - podman
+  - podman-docker
   - python3-boto
   - python3-boto3
   - python3-operator-courier
@@ -46,6 +46,7 @@ devel_pkgs:
   - gcc
   - gcc-c++
   - git
+  - git-credential-libsecret
   - golang
   - golang-docs
   - jq
@@ -61,13 +62,13 @@ devel_pkgs:
 daw_pkgs:
   - audacious
   - audacity
-  - cadence
-  - calf-plugins
+  - Cadence
   - fluid-soundfont-gm
   - fluid-soundfont-gs
   - guitarix
   - jalv
   - ladspa-swh-plugins
+  - lv2-calf-plugins
   - lv2-devel
   - lv2-drumkv1
   - lv2-guitarix-plugins
@@ -77,7 +78,6 @@ daw_pkgs:
   - qjackctl
   - qmidiarp
   - qtractor
-  - radium-compressor
   - vmpk
   - yoshimi
   - zam-plugins

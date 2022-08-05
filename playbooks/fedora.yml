@@ -19,3 +19,4 @@
         install_devel: true
         install_artwork: false
         install_codecs: false
+        install_daw: false

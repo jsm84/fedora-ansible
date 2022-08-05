@@ -3,6 +3,7 @@
     name: 
       - steam 
       - wine
+      - lpf-spotify-client
     state: present
   become: true
 

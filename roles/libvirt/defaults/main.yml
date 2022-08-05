@@ -2,7 +2,6 @@
 enable_debug: false
 configure_network: false
 configure_storage: false
-install_vagrant: false
 libvirt_pkgs:
   - bridge-utils
   - libvirt
@@ -14,7 +13,13 @@ libvirt_pkgs:
   - python3-libvirt
   - python3-lxml
   - qemu-kvm
-  - qemu-user-static # for non-x86 cpu emulation
+  - qemu-user-static
+  - vagrant
   - virt-install
   - virt-manager
 vm_storage_dir: /home/libvirt/images
+modify_default_network: true
+libvirt_domain_name: "{{ ansible_domain }}"
+libvirt_network_device: virbr0
+libvirt_network_name: default
+libvirt_network_subnet: "122"

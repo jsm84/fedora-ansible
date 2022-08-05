@@ -1,0 +1,12 @@
+[Unit]
+Description=Libvirt dns configuration for {{ libvirt_network_name }} network
+BindsTo=sys-subsystem-net-devices-{{ libvirt_network_device }}.device
+After=sys-subsystem-net-devices-{{ libvirt_network_device }}.device systemd-resolved.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/resolvectl dns {{ libvirt_network_device }} 192.168.{{ libvirt_network_subnet }}.1
+ExecStart=/usr/bin/resolvectl domain {{ libvirt_network_device }} "~{{ libvirt_domain_name }}"
+
+[Install]
+WantedBy=sys-subsystem-net-devices-{{ libvirt_network_device }}.device

@@ -1,12 +1,19 @@
 ---
-- name: start_default_net
+- name: start_libvirt_net
   virt_net:
-    name: default
+    name: "{{ libvirt_network_name }}"
     command: start
+  become: true
 
 - name: start_default_pool
   virt_pool:
     name: default
     command: start
+  become: true
 
-
+- name: start_dns_libvirt
+  systemd:
+    name: dns-libvirt-{{ libvirt_network_device }}
+    state: started
+    enabled: yes
+  become: true

@@ -1,5 +1,5 @@
 # This playbook installs and configures libvirt and virt-manager.
-# Don't use the "become" flag with this playbook, or your user account won't get added to the plugdev group.
+# Don't use the "become" flag with this playbook, or your user account won't get added to the libvirt group.
 # Set the variables below according to preference, but I recommend to enable both
 #
 # To run locally, define "localhost ansible_connection=local" in your hosts inventory and run:

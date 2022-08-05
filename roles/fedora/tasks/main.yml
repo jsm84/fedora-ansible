@@ -1,5 +1,5 @@
 ---
-# Fix an issue on certain laptops where suspend occurs when booting 
+# Fix an issue on certain laptops where suspend occurs when booting
 # with the lid closed while docked and/or plugged in (forever reboot)
 - name: Disable systemd laptop lid-close power mgmt
   lineinfile:
@@ -24,6 +24,14 @@
     name: "{{ devel_pkgs }}"
     state: present
   when: install_devel | bool
+
+- name: Install Chromium (Fedora)
+  dnf:
+    name: chromium
+    state: present
+  when:
+  - not install_chrome | bool
+  - not install_codecs | bool
 
 - name: Install Fedora artwork
   dnf:
@@ -54,22 +62,16 @@
     dnf:
       name: '@Multimedia'
       state: present
-  
+
   # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing versus fedora chromium:
   - name: Install chromium-freeworld
     dnf:
       name: chromium-freeworld
       state: present
     when: not install_chrome | bool
-
-  - name: Disable Fedora Chromium package (replaced by chromium-freeworld)
-    dnf:
-      name: chromium
-      state: absent
-    when: not install_chrome | bool
   when: install_codecs | bool
 
-- name: Install Google Chrome  
+- name: Install Google Chrome
   block:
   - name: Import Google Linux GPG Key
     rpm_key:
@@ -81,6 +83,13 @@
       name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
       state: present
   when: install_chrome | bool
+
+- name: Disable Fedora Chromium package (replaced by chrome and/or chromium-freeworld)
+  dnf:
+    name: chromium
+    state: absent
+  when: install_chrome | bool or
+        install_codecs | bool
 
 - name: Install Digital Audio Workstation
   dnf:

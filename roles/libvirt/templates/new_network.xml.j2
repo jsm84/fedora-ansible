@@ -1,0 +1,11 @@
+<network>
+  <name>{{ libvirt_network_name }}</name>
+  <bridge name='{{ libvirt_network_device }}'/>
+  <forward/>
+  <ip address='192.168.{{ libvirt_network_subnet }}.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.{{ libvirt_network_subnet }}.2' end='192.168.{{ libvirt_network_subnet }}.254'/>
+    </dhcp>
+  </ip>
+  <domain name='{{ libvirt_domain_name }}' localOnly='yes'/>
+</network>

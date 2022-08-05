@@ -1,22 +1,10 @@
 - name: Fail if host domain name is set improperly
   assert:
     that:
-    - ansible_domain | regex_search('^[0-9a-z]([-0-9a-z]*[0-9a-z])?(\.[0-9a-z]([-0-9a-z]*[0-9a-z])?)+$')
-
-# This part needs updating for systemd-resolved, which is used since F33
-#- name: Configure libvirtd dnsmasq
-#  block:
-#  - name: Configure NetworkManager to use dnsmasq
-#    copy:
-#      src: localdns.conf
-#      dest: /etc/NetworkManager/conf.d/
-
-#  - name: Configure dnsmasq for libvirt
-#    template:
-#      src: libvirt_dnsmasq.conf.j2
-#      dest: /etc/NetworkManager/dnsmasq.d/libvirt_dnsmasq.conf
-#  become: true
-#  when: configure_network | bool
+    - libvirt_domain_name | regex_search('^[0-9a-z]([-0-9a-z]*[0-9a-z])?(\.[0-9a-z]([-0-9a-z]*[0-9a-z])?)+$')
+  when:
+  - configure_network | bool
+  - modify_default_network | bool
 
 - name: Install libvirt packages
   dnf:
@@ -38,7 +26,7 @@
     enabled: yes
   become: true
 
-- name: Configure libvirt default network
+- name: Configure default libvirt network
   block:
   - name: Get libvirt default network config
     virt_net:
@@ -54,12 +42,12 @@
   - name: Create libvirt default net xml from data
     copy:
       content: "{{ default_net.get_xml }}"
-      dest: ./roles/libvirt/files/libvirt_default_net.xml
+      dest: /tmp/libvirt_default_net_{{ ansible_hostname }}.xml
 
   - name: Add Domain to libvirt default net xml
     lineinfile:
-      line: "  <domain name='{{ ansible_domain }}' localOnly='yes'/>"
-      dest: ./roles/libvirt/files/libvirt_default_net.xml
+      line: "  <domain name='{{ libvirt_domain_name }}' localOnly='yes'/>"
+      dest: /tmp/libvirt_default_net_{{ ansible_hostname }}.xml
       regexp: "^  <domain.*/>$"
       insertbefore: '</network>'
     register: net_domain
@@ -73,6 +61,7 @@
     virt_net:
       name: default
       command: destroy
+    ignore_errors: true
     when: net_domain.changed
 
   - name: delete libvirt default net
@@ -81,16 +70,82 @@
       command: undefine
     when: net_domain.changed
 
+  - name: Copy remote network xml to ansible control node
+    fetch:
+      src: /tmp/libvirt_default_net_{{ ansible_hostname }}.xml
+      dest: /tmp/libvirt_default_net_{{ ansible_hostname }}.xml
+    when: not ansible_connection == "local"
+
   - name: Configure libvirt default net from xml
     virt_net:
       name: default
       command: define
-      xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_net.xml')}}"
+      xml: "{{ lookup('file', '/tmp/libvirt_default_net_{{ ansible_hostname }}.xml') }}"
     when: net_domain.changed
     notify:
-    - start_default_net
+    - start_libvirt_net
   become: true
-  when: configure_network | bool
+  when:
+  - configure_network | bool
+  - modify_default_network | bool
+
+- name: Configure Custom Libvirt Network
+  block:
+  - name: Change network vars from default values
+    set_fact:
+      libvirt_network_name: "virt"
+      libvirt_network_device: "virt0"
+      libvirt_network_subnet: "123"
+
+  - name: Change libvirt domain name from default
+    set_fact:
+      libvirt_domain_name: "{{ libvirt_network_name }}.local"
+
+  - name: Define new libvirt network
+    virt_net:
+      command: define
+      name: "{{ libvirt_network_name }}"
+      xml: "{{ lookup('template', './roles/libvirt/templates/new_network.xml.j2') }}"
+    notify: start_libvirt_net
+  become: true
+  when:
+  - configure_network | bool
+  - not modify_default_network | bool
+
+- name: Configure and start libvirt network
+  block:
+  - name: Configure systemd-resolved for libvirt dns resolution
+    template:
+      src: ./roles/libvirt/templates/dns-libvirt.service.j2
+      dest: /etc/systemd/system/dns-libvirt-{{ libvirt_network_device }}.service
+    notify: start_dns_libvirt
+
+  - name: Autostart libvirt network
+    virt_net:
+      autostart: yes
+      name: "{{ libvirt_network_name }}"
+  become: true
+  when:
+  - configure_network | bool
+
+- name: Pre-configure libvirt default storage pool
+  block:
+  - name: Check if default pool exists
+    virt_pool:
+      command: get_xml
+      name: default
+  rescue:
+  - name: Define default storage pool for libvirt
+    virt_pool:
+      name: default
+      command: define
+      xml: "{{ lookup('template', './roles/libvirt/templates/libvirt_default_pool.xml.j2') }}"
+  - name: Start libvirt default storage pool
+    virt_pool:
+      name: default
+      command: start
+  become: true
+  when: configure_storage | bool
 
 - name: Configure libvirt default storage pool
   block:
@@ -125,12 +180,12 @@
   - name: Create libvirt default pool from data
     copy:
       content: "{{ default_pool.get_xml }}"
-      dest: ./roles/libvirt/files/libvirt_default_pool.xml
+      dest: /tmp/libvirt_default_pool.xml
 
   - name: Change path in libvirt default pool xml
     lineinfile:
       line: "    <path>{{ vm_storage_dir }}</path>"
-      dest: ./roles/libvirt/files/libvirt_default_pool.xml
+      dest: /tmp/libvirt_default_pool.xml
       regexp: '^    <path>.*</path>$'
       insertbefore: '</target>'
     register: storage_path
@@ -144,9 +199,10 @@
     virt_pool:
       name: default
       command: destroy
+    ignore_errors: true
     when: storage_path.changed
 
-  - name: delete libvirt default net
+  - name: delete libvirt default pool
     virt_pool:
       name: default
       command: undefine
@@ -156,15 +212,14 @@
     virt_pool:
       name: default
       command: define
-      xml: "{{lookup('file', './roles/libvirt/files/libvirt_default_pool.xml')}}"
+      xml: "{{ lookup('file', '/tmp/libvirt_default_pool.xml') }}"
     when: storage_path.changed
     notify:
     - start_default_pool
+
+  - name: Autostart default pool
+    virt_pool:
+      autostart: yes
+      name: default
   become: true
   when: configure_storage | bool
-
-- name: Install vagrant
-  dnf:
-    name: vagrant
-    state: present
-  when: install_vagrant | bool
