@@ -9,6 +9,7 @@ install_daw: false
 
 base_pkgs:
   - ansible
+  - bolt
   - evolution
   - gimp
   - guake
