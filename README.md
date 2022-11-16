@@ -19,7 +19,7 @@ Usage details are documented within each playbook.
 | *playbooks/rhworkstation.yml*    | Provided for internal use (requires additional RPM packages to configure CUPS, VPN profiles and Kerberos SSO)
 | *playbooks/minikube.yml*         | Installs latest version of Minikube (as of 01/2021)
 | *playbooks/extras.yml*           | Installs Steam, wine, and optionally NVIDIA graphics drivers and sabnzbd (for USENET)
-| *playbooks/crc.yml*              | CodeReady Container installation (coming soon)
+| *playbooks/crc.yml*              | CodeReady Containers installation
 
 ### Customizable Settings
 The following options are available as (mostly) boolean variables which can be customized using `--extra-vars` or changed in the respective playbook:

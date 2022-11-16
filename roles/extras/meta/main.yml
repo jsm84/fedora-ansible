@@ -1,0 +1,5 @@
+---
+dependencies:
+  - role: fedora
+    install_codecs: true
+    become: true

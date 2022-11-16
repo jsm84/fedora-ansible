@@ -13,4 +13,3 @@
   - role: extras 
     vars:
       install_drivers: true
-      install_usenet: true
