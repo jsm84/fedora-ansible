@@ -17,7 +17,7 @@
   dnf:
     name: "{{ media_players }}"
     state: present
-  when: install_media_players | bool == true
+  when: install_media_players | bool
   become: true
 
 - name: Install Spotify
@@ -32,7 +32,7 @@
       name: "{{ ansible_user_id }}"
       groups: pkg-build
       append: yes
-  when: install_spotify | bool == true
+  when: install_spotify | bool
   notify: lpf-update
   become: true
 
@@ -87,7 +87,7 @@
         append: yes
     when: '"Razer" in usb_devices.stdout'
   become: true
-  when: install_drivers | bool == true
+  when: install_drivers | bool
 
 - name: Install USENET tools
   block:
@@ -119,4 +119,18 @@
       dest: /usr/local/bin/sabnzbd
       mode: 0755
   become: true
-  when: install_usenet | bool == true
+  when: install_usenet | bool
+
+- name: Install Fedora artwork
+  dnf:
+    name: f{{ item }}-backgrounds-base,f{{ item }}-backgrounds-extras-base,f{{ item }}-backgrounds-extras-gnome,f{{ item }}-backgrounds-extras-xfce
+    state: present
+  with_items:
+  - "{{ query('sequence', 'start=21 end={{ ansible_distribution_version }}') }}"
+  when: install_artwork | bool
+
+- name: Install Digital Audio Workstation
+  dnf:
+    name: "{{ daw_pkgs }}"
+    state: present
+  when: install_daw | bool

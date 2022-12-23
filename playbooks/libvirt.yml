@@ -7,10 +7,13 @@
 #
 # To run remotely, define your remote machines in your hosts inventory and run:
 # ansible-playbook -ku <username> -i hosts playbooks/extras.yml
+#
+# See roles/libvirt/defaults/main.yml for a list of all supported variables
 
 - hosts: all
   roles:
     - role: libvirt
       vars:
         configure_network: true
-        configure_storage: true 
+        configure_storage: true
+        modify_default_network: true

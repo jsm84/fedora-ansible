@@ -5,7 +5,7 @@
   lineinfile:
     path: /etc/systemd/logind.conf
     line: "HandleLidSwitchExternalPower=ignore"
-  when: lenovo_pmfix | bool
+  when: laptop_pmfix | bool
 
 - name: Install base packages
   dnf:
@@ -19,32 +19,34 @@
     state: present
   when: install_cloud | bool
 
-- name: Install developer tools and frameworks
-  dnf:
-    name: "{{ devel_pkgs }}"
-    state: present
+- name: Install and Configure Dev Environment
+  block:
+  - name: Install developer tools and frameworks
+    dnf:
+      name: "{{ devel_pkgs }}"
+      state: present
+
+  - name: Configure git credential helper
+    ini_file:
+      path: ~/.gitconfig
+      section: credential
+      option: helper
+      value: /usr/libexec/git-core/git-credential-libsecret
+      mode: "0600"
+    become: false
+
+  - name: Setup vim indentation of json
+    copy:
+      src: json.vim
+      dest: ~/.vim/ftplugin/json.vim
+    become: false
+
+  - name: Setup vim indentation of yaml
+    copy:
+      src: yaml.vim
+      dest: ~/.vim/ftplugin/yaml.vim
+    become: false
   when: install_devel | bool
-
-- name: Configure git credential helper
-  ini_file:
-    path: ~/.gitconfig
-    section: credential
-    option: helper
-    value: /usr/libexec/git-core/git-credential-libsecret
-    mode: "0600"
-  become: false
-
-- name: Setup vim indentation of json
-  copy:
-    src: json.vim
-    dest: ~/.vim/ftplugin/json.vim
-  become: false
-
-- name: Setup vim indentation of yaml
-  copy:
-    src: yaml.vim
-    dest: ~/.vim/ftplugin/yaml.vim
-  become: false
 
 - name: Install Chromium (Fedora)
   dnf:
@@ -53,14 +55,6 @@
   when:
   - not install_chrome | bool
   - not install_codecs | bool
-
-- name: Install Fedora artwork
-  dnf:
-    name: f{{ item }}-backgrounds-base,f{{ item }}-backgrounds-extras-base,f{{ item }}-backgrounds-extras-gnome,f{{ item }}-backgrounds-extras-xfce
-    state: present
-  with_items:
-  - "{{ query('sequence', 'start=21 end={{ ansible_distribution_version }}') }}"
-  when: install_artwork | bool
 
 - name: Enable RPM Fusion (including non-free) multimedia codecs
   block:
@@ -111,9 +105,3 @@
     state: absent
   when: install_chrome | bool or
         install_codecs | bool
-
-- name: Install Digital Audio Workstation
-  dnf:
-    name: "{{ daw_pkgs }}"
-    state: present
-  when: install_daw | bool

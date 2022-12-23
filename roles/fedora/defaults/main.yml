@@ -1,11 +1,9 @@
-lenovo_pmfix: true
+laptop_pmfix: false
 install_base: true
 install_cloud: true
 install_devel: true
-install_artwork: false
 install_codecs: false
 install_chrome: false
-install_daw: false
 
 base_pkgs:
   - ansible
@@ -59,30 +57,6 @@ devel_pkgs:
   - vim-go
   - vim-golint
   - yamllint
-
-daw_pkgs:
-  - audacious
-  - audacity
-  - Cadence
-  - fluid-soundfont-gm
-  - fluid-soundfont-gs
-  - guitarix
-  - jalv
-  - ladspa-swh-plugins
-  - lv2-calf-plugins
-  - lv2-devel
-  - lv2-drumkv1
-  - lv2-guitarix-plugins
-  - lv2-samplv1
-  - lv2-swh-plugins
-  - lv2-synthv1
-  - qjackctl
-  - qmidiarp
-  - qtractor
-  - vmpk
-  - yoshimi
-  - zam-plugins
-  - zynaddsubfx
 
 rpmfusion_pkgs:
   - https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm
