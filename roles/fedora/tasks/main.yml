@@ -25,6 +25,27 @@
     state: present
   when: install_devel | bool
 
+- name: Configure git credential helper
+  ini_file:
+    path: ~/.gitconfig
+    section: credential
+    option: helper
+    value: /usr/libexec/git-core/git-credential-libsecret
+    mode: "0600"
+  become: false
+
+- name: Setup vim indentation of json
+  copy:
+    src: json.vim
+    dest: ~/.vim/ftplugin/json.vim
+  become: false
+
+- name: Setup vim indentation of yaml
+  copy:
+    src: yaml.vim
+    dest: ~/.vim/ftplugin/yaml.vim
+  become: false
+
 - name: Install Chromium (Fedora)
   dnf:
     name: chromium
