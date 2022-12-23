@@ -3,8 +3,37 @@
     name: 
       - steam 
       - wine
-      - lpf-spotify-client
+      - protontricks
     state: present
+  become: true
+
+- name: Install Missing GStreamer Plugins
+  dnf:
+    name: "{{ missing_gstreamer_plugins }}"
+    state: present
+  become: true
+
+- name: Install Media Players
+  dnf:
+    name: "{{ media_players }}"
+    state: present
+  when: install_media_players | bool == true
+  become: true
+
+- name: Install Spotify
+  block:
+  - name: Install Spotify LPF package
+    dnf:
+      name: lpf-spotify-client
+      state: present
+
+  - name: Add current user to the pkg-build group
+    user:
+      name: "{{ ansible_user_id }}"
+      groups: pkg-build
+      append: yes
+  when: install_spotify | bool == true
+  notify: lpf-update
   become: true
 
 - name: Install Gaming Hardware Drivers and Utilities
@@ -89,6 +118,5 @@
       src: ./roles/extras/files/sabnzbd
       dest: /usr/local/bin/sabnzbd
       mode: 0755
-
   become: true
   when: install_usenet | bool == true
