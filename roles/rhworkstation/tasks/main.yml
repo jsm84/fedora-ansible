@@ -55,6 +55,10 @@
 - debug:
     var: containers_policy
 
+- name: Append ISV key to containers policy.json for community
+  set_fact:
+    containers_policy: "{{ containers_policy | default([]) | combine({'transports':{'docker':{'registry.redhat.io/redhat/community-operator-index':[{'type':'signedBy','keyType':'GPGKeys','keyPath':'/etc/pki/rpm-gpg/ISV-Container-Signing-Key'}]}}}, recursive=True) }}"
+
 - name: Append ISV key to containers policy.json for certified
   set_fact:
     containers_policy: "{{ containers_policy | default([]) | combine({'transports':{'docker':{'registry.redhat.io/redhat/certified-operator-index':[{'type':'signedBy','keyType':'GPGKeys','keyPath':'/etc/pki/rpm-gpg/ISV-Container-Signing-Key'}]}}}, recursive=True) }}"
