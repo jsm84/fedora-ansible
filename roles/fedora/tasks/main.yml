@@ -75,7 +75,7 @@
 
   - name: Install multimedia codecs
     dnf:
-      name: '@Multimedia'
+      name: "{{ codec_pkgs }}"
       state: present
 
   # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing versus fedora chromium:
