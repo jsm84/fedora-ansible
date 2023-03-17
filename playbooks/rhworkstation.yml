@@ -1,3 +1,6 @@
+# Deprecated in favor of Fedora CSB
+# Provided for minimal configuration of a non-CSB Fedora install
+#
 # This playbook installs essential work related tools, but requires the packages to be accessible locally or from VPN.
 # Run this with the "become" flag set to enable sudo privileges. There are no tunable options.
 #

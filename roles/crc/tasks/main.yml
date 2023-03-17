@@ -1,3 +1,13 @@
+- name: Create Downloads directory
+  file:
+    path: "{{ ansible_user_dir }}/Downloads"
+    state: directory
+
+- name: Create $HOME/bin directory
+  file:
+    path: "{{ ansible_user_dir }}/bin"
+    state: directory
+
 - name: Download CodeReady Containers
   get_url: 
     url: http://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz
@@ -6,6 +16,7 @@
 - name: Extract crc archive
   unarchive: 
     src: "{{ ansible_user_dir }}/Downloads/crc-linux-amd64.tar.xz"
+    remote_src: true
     dest: "{{ crc_dest_dir }}"
     exclude: "*/LICENSE"
     extra_opts:
