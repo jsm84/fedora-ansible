@@ -127,6 +127,7 @@
     state: present
   with_items:
   - "{{ query('sequence', 'start=21 end={{ ansible_distribution_version }}') }}"
+  become: true
   when: install_artwork | bool
 
 - name: Install Digital Audio Workstation
