@@ -1,3 +1,4 @@
+---
 - name: lpf-update
   debug:
     msg: "Remember to run `lpf update` to complete Spotify installation!"

@@ -1,4 +1,5 @@
-# This installs the essential developer and container tools, plus essential web browser and multimedia codecs (from RPM Fusion). 
+---
+# This installs the essential developer and container tools, plus essential web browser and multimedia codecs (from RPM Fusion).
 # You must run this playbook with the "become" flag in order to provide sudo privileges.
 #
 # Set the variables below according to preference. Artwork and codecs default to disabled per user feedback.

@@ -1,3 +1,4 @@
+---
 # Deprecated in favor of RHEL CSB
 # Provided for minimal configuration of a non-CSB Fedora install
 - name: Setup Chromium for legacy RH Kerberos SSO

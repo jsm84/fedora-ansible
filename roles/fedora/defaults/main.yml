@@ -1,3 +1,4 @@
+---
 laptop_pmfix: false
 install_base: true
 install_cloud: true
@@ -58,6 +59,7 @@ devel_pkgs:
   - patch
   - python3
   - python3-devel
+  - python3-tox-current-env
   - rpmconf
   - ruby
   - vim-go
@@ -75,6 +77,15 @@ codec_pkgs:
   - gstreamer1-plugins-good
   - gstreamer1-plugins-ugly
   - gstreamer1-plugins-ugly-free
+
+gnome_exts:
+  - gnome-shell-extension-appindicator
+  - gnome-shell-extension-caffeine
+  - gnome-shell-extension-dash-to-dock
+  - gnome-shell-extension-frippery-move-clock
+  - gnome-shell-extension-gamemode
+  - gnome-shell-extension-just-perfection
+  - gnome-shell-extension-user-theme
 
 rpmfusion_pkgs:
   - https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_version }}.noarch.rpm

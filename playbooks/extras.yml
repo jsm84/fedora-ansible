@@ -1,7 +1,8 @@
+---
 # This playbook installs optional, non-work related extras intended for off-hours use only :)
 # Don't use the "become" flag with this playbook, or your user account won't get added to the plugdev (openrazer) or pkg-build (spotify) groups.
 # Set the variables below according to preference, but Steam and Wine are always installed.
-# 
+#
 # To run locally, define "localhost ansible_connection=local" in your hosts inventory and run:
 # ansible-playbook -K -i hosts playbooks/extras.yml
 #
@@ -12,7 +13,7 @@
 
 - hosts: all
   roles:
-  - role: extras 
+  - role: extras
     vars:
       install_drivers: true
       install_spotify: false

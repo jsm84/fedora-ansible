@@ -1,3 +1,4 @@
+---
 - name: Fail if host domain name is set improperly
   assert:
     that:
@@ -16,14 +17,14 @@
   user:
     name: "{{ ansible_user_id }}"
     groups: libvirt
-    append: yes
+    append: true
   become: true
 
 - name: Ensure libvirtd is started
   service:
     name: libvirtd
     state: started
-    enabled: yes
+    enabled: true
   become: true
 
 - name: Configure default libvirt network
@@ -122,7 +123,7 @@
 
   - name: Autostart libvirt network
     virt_net:
-      autostart: yes
+      autostart: true
       name: "{{ libvirt_network_name }}"
   become: true
   when:
@@ -219,7 +220,8 @@
 
   - name: Autostart default pool
     virt_pool:
-      autostart: yes
+      autostart: true
       name: default
   become: true
-  when: configure_storage | bool
+  when: configure_storage | bool and
+        not 'btrfs' in ansible_mounts | json_query('[?mount == `/home`].fstype')

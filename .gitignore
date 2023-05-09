@@ -1,10 +1,32 @@
+# Backup files
 *.bak
+
+# Config files
 *.conf
+
+# SSL/TLS Certificates
 *.crt
+
+# Data files
 *.info
 *.json
-*.retry
-*.rpm
-*.tgz
 *.xml
+
+# Playbook retries
+*.retry
+
+# RPM packages
+*.rpm
+
+# Archives
+*.tar
+*.tar.bz2
+*.tar.gz
+*.tar.xz
+*.tbz2
+*.tgz
+*.txz
 *.zip
+
+# RH Workstation Files
+roles/rhworkstation/files

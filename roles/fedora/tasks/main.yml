@@ -7,6 +7,10 @@
     line: "HandleLidSwitchExternalPower=ignore"
   when: laptop_pmfix | bool
 
+- name: List installed packages
+  package_facts:
+    manager: auto
+
 - name: Install base packages
   dnf:
     name: "{{ base_pkgs }}"
@@ -56,7 +60,8 @@
   dnf:
     name: "{{ csb_pkgs }}"
     state: present
-  when: install_csb | bool
+  when: install_csb | bool or
+        ansible_local.csb
 
 - name: Install and Configure Dev Environment
   block:
@@ -67,7 +72,7 @@
 
   - name: Configure git credential helper
     ini_file:
-      path: "{{ ansible_user_id }}/.gitconfig"
+      path: "{{ ansible_user_dir }}/.gitconfig"
       section: credential
       option: helper
       value: /usr/libexec/git-core/git-credential-libsecret
@@ -77,13 +82,13 @@
   - name: Setup vim indentation of json
     copy:
       src: json.vim
-      dest: "{{ ansible_user_id }}/.vim/ftplugin/"
+      dest: "{{ ansible_user_dir }}/.vim/ftplugin/"
     become: false
 
   - name: Setup vim indentation of yaml
     copy:
       src: yaml.vim
-      dest: "{{ ansible_user_id }}/.vim/ftplugin/"
+      dest: "{{ ansible_user_dir }}/.vim/ftplugin/"
     become: false
   when: install_devel | bool
 
@@ -144,3 +149,9 @@
     state: absent
   when: install_chrome | bool or
         install_codecs | bool
+
+- name: Install GNOME extensions
+  dnf:
+    name: "{{ gnome_exts }}"
+    state: present
+  when: "'gnome-shell' in ansible_facts.packages"

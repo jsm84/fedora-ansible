@@ -1,2 +1,3 @@
+---
 unarchive_dir: "/tmp/"
 crc_dest_dir: "{{ ansible_user_dir }}/bin"

@@ -1,3 +1,4 @@
+---
 # This playbook installs Minikube v1.16.0 (K8s v1.20-beta). This is a bit dated, and pending modernization.
 # Don't use the become flag with this playbook. The minikube binary will install to your user's home directory.
 #

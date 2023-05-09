@@ -15,5 +15,5 @@
   systemd:
     name: dns-libvirt-{{ libvirt_network_device }}
     state: started
-    enabled: yes
+    enabled: true
   become: true

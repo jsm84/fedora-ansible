@@ -1,5 +1,6 @@
-# This is still a major WIP, and is not yet functional. 
+---
+# This is still a major WIP, and is not yet functional.
 
 - hosts: all
-  roles: 
+  roles:
   - crc

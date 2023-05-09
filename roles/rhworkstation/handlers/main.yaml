@@ -1,7 +1,8 @@
+---
 # Deprecated in favor of Fedora CSB
 # Provided for minimal configuration of a non-CSB Fedora install
 - name: restart cups
   service:
     name: cups
-    enabled: yes
+    enabled: true
     state: restarted
