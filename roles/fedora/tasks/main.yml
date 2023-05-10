@@ -5,7 +5,12 @@
   lineinfile:
     path: /etc/systemd/logind.conf
     line: "HandleLidSwitchExternalPower=ignore"
-  when: laptop_pmfix | bool
+
+- name: Disable Fedora hotspot popup annoyance
+  file:
+    path: /etc/NetworkManager/conf.d/20-connectivity-fedora.conf
+    state: file
+  become: true
 
 - name: List installed packages
   package_facts:

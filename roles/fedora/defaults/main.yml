@@ -1,5 +1,4 @@
 ---
-laptop_pmfix: false
 install_base: true
 install_cloud: true
 install_csb: false
