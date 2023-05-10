@@ -22,3 +22,15 @@
     exclude: "*/LICENSE"
     extra_opts:
     - --strip-components=1
+
+- name: Purge crc cache dir
+  file:
+    path: "{{ ansible_user_dir }}/.crc"
+    state: absent
+
+- name: Enable btrfs nodatacow for crc cache dir
+  file:
+    path: "{{ ansible_user_dir }}/.crc"
+    attributes: +C
+    state: directory
+  when: "'btrfs' in ansible_mounts | json_query('[?mount == `/home`].fstype')"
