@@ -17,6 +17,7 @@ base_pkgs:
   - inkscape
   - krb5-workstation
   - mpg123
+  - openssl
   - vim
   - vim-X11
 
