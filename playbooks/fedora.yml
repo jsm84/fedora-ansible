@@ -13,7 +13,6 @@
 # See roles/fedora/defaults/main.yml for a list of all supported variables
 
 - hosts: all
-  become: true
   roles:
     - role: fedora
       vars:

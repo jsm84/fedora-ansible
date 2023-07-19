@@ -5,6 +5,7 @@
   lineinfile:
     path: /etc/systemd/logind.conf
     line: "HandleLidSwitchExternalPower=ignore"
+  become: true
 
 - name: Disable Fedora hotspot popup annoyance
   file:
@@ -20,6 +21,7 @@
   dnf:
     name: "{{ base_pkgs }}"
     state: present
+  become: true
   when: install_base | bool
 
 - name: Install cloud and container tools
@@ -59,12 +61,14 @@
     copy:
       content: "{{ containers_policy | to_nice_json }}"
       dest: /etc/containers/policy.json
+  become: true
   when: install_cloud | bool
 
 - name: Install CSB worksuite
   dnf:
     name: "{{ csb_pkgs }}"
     state: present
+  become: true
   when: install_csb | bool or
         ansible_local.csb
 
@@ -74,6 +78,7 @@
     dnf:
       name: "{{ devel_pkgs }}"
       state: present
+    become: true
 
   - name: Configure git credential helper
     ini_file:
@@ -101,6 +106,7 @@
   dnf:
     name: chromium
     state: present
+  become: true
   when:
   - not install_chrome | bool
   - not install_codecs | bool
@@ -133,6 +139,7 @@
       name: chromium-freeworld
       state: present
     when: not install_chrome | bool
+  become: true
   when: install_codecs | bool
 
 - name: Install Google Chrome
@@ -146,12 +153,14 @@
     dnf:
       name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
       state: present
+  become: true
   when: install_chrome | bool
 
 - name: Disable Fedora Chromium package (replaced by chrome and/or chromium-freeworld)
   dnf:
     name: chromium
     state: absent
+  become: true
   when: install_chrome | bool or
         install_codecs | bool
 
@@ -159,4 +168,5 @@
   dnf:
     name: "{{ gnome_exts }}"
     state: present
+  become: true
   when: "'gnome-shell' in ansible_facts.packages"
