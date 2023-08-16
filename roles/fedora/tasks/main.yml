@@ -10,7 +10,7 @@
 - name: Disable Fedora hotspot popup annoyance
   file:
     path: /etc/NetworkManager/conf.d/20-connectivity-fedora.conf
-    state: file
+    state: touch
   become: true
 
 - name: List installed packages
@@ -70,7 +70,7 @@
     state: present
   become: true
   when: install_csb | bool or
-        ansible_local.csb
+    ansible_local.csb is defined
 
 - name: Install and Configure Dev Environment
   block:
@@ -109,7 +109,6 @@
   become: true
   when:
   - not install_chrome | bool
-  - not install_codecs | bool
 
 - name: Enable RPM Fusion (including non-free) multimedia codecs
   block:
@@ -132,13 +131,6 @@
     dnf:
       name: "{{ codec_pkgs }}"
       state: present
-
-  # Chromium-freeworld enables non-free multimedia streaming, Bluejeans Live and WebEx screensharing versus fedora chromium:
-  - name: Install chromium-freeworld
-    dnf:
-      name: chromium-freeworld
-      state: present
-    when: not install_chrome | bool
   become: true
   when: install_codecs | bool
 
@@ -155,14 +147,6 @@
       state: present
   become: true
   when: install_chrome | bool
-
-- name: Disable Fedora Chromium package (replaced by chrome and/or chromium-freeworld)
-  dnf:
-    name: chromium
-    state: absent
-  become: true
-  when: install_chrome | bool or
-        install_codecs | bool
 
 - name: Install GNOME extensions
   dnf:

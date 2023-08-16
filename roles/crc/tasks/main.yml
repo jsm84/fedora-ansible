@@ -23,14 +23,27 @@
     extra_opts:
     - --strip-components=1
 
-- name: Purge crc cache dir
-  file:
+- name: fetch crc homedir state
+  stat:
     path: "{{ ansible_user_dir }}/.crc"
-    state: absent
+  register: crc_dir
 
-- name: Enable btrfs nodatacow for crc cache dir
-  file:
-    path: "{{ ansible_user_dir }}/.crc"
-    attributes: +C
-    state: directory
-  when: "'btrfs' in ansible_mounts | json_query('[?mount == `/home`].fstype')"
+- name: crc homedir
+  debug:
+    var: crc_dir
+
+- name: Disable COW for crc dir if btrfs
+  block:
+  - name: Purge crc cache dir
+    file:
+      path: "{{ ansible_user_dir }}/.crc"
+      state: absent
+
+  - name: Enable btrfs nodatacow for crc dir
+    file:
+      path: "{{ ansible_user_dir }}/.crc"
+      attributes: +C
+      state: directory
+  when:
+  - "not 'C' in crc_dir.stat.attr_flags"
+  - "'btrfs' in ansible_mounts | json_query('[?mount == `/home`].fstype')"
