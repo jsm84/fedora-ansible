@@ -67,7 +67,7 @@ devel_pkgs:
   - yamllint
 
 codec_pkgs:
-  - ffmpeg-free
+  - ffmpeg
   - libavcodec-freeworld
   - mozilla-openh264
   - gstreamer1-libav

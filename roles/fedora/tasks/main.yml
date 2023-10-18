@@ -7,6 +7,11 @@
     line: "HandleLidSwitchExternalPower=ignore"
   become: true
 
+- name: Disable Audio Popping on Intel HD Audio
+  copy:
+    src: alsa-base.conf
+    dest: /etc/modprobe.d/alsa-base.conf
+
 - name: Disable Fedora hotspot popup annoyance
   file:
     path: /etc/NetworkManager/conf.d/20-connectivity-fedora.conf
@@ -145,6 +150,10 @@
     dnf:
       name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
       state: present
+  - name: Remove Chromium
+    dnf:
+      name: chromium
+      state: absent
   become: true
   when: install_chrome | bool
 
