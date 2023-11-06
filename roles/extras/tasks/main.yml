@@ -135,4 +135,5 @@
   dnf:
     name: "{{ daw_pkgs }}"
     state: present
+  become: true
   when: install_daw | bool
