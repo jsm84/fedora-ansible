@@ -11,6 +11,7 @@
   copy:
     src: alsa-base.conf
     dest: /etc/modprobe.d/alsa-base.conf
+  become: true
 
 - name: Disable Fedora hotspot popup annoyance
   file:
@@ -92,28 +93,32 @@
       option: helper
       value: /usr/libexec/git-core/git-credential-libsecret
       mode: "0600"
-    become: false
 
   - name: Setup vim indentation of json
     copy:
       src: json.vim
       dest: "{{ ansible_user_dir }}/.vim/ftplugin/"
-    become: false
 
   - name: Setup vim indentation of yaml
     copy:
       src: yaml.vim
       dest: "{{ ansible_user_dir }}/.vim/ftplugin/"
-    become: false
   when: install_devel | bool
 
 - name: Install Chromium (Fedora)
-  dnf:
-    name: chromium
-    state: present
+  block:
+  - name: Install chromium package
+    dnf:
+      name: chromium
+      state: present
+
+  - name: Enable SSO for Chrome/Chromium in Incognito mode
+    copy:
+      src: 00_gssapi_incognito.json
+      dest: /etc/chromium/policies/recommended/
   become: true
   when:
-  - not install_chrome | bool
+  - install_chromium | bool
 
 - name: Enable RPM Fusion (including non-free) multimedia codecs
   block:
@@ -150,10 +155,11 @@
     dnf:
       name: "https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm"
       state: present
-  - name: Remove Chromium
-    dnf:
-      name: chromium
-      state: absent
+
+  - name: Enable SSO for Chrome/Chromium in Incognito mode
+    copy:
+      src: 00_gssapi_incognito.json
+      dest: /etc/opt/chrome/policies/recommended/
   become: true
   when: install_chrome | bool
 

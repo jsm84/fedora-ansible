@@ -5,6 +5,7 @@ install_csb: false
 install_devel: true
 install_codecs: false
 install_chrome: false
+install_chromium: false
 
 base_pkgs:
   - ansible
@@ -33,7 +34,6 @@ cloud_pkgs:
   - podman-docker
   - python3-boto
   - python3-boto3
-  - python3-operator-courier
   - python3-kubernetes
   - python3-openshift
   - python3-psutil
@@ -62,12 +62,13 @@ devel_pkgs:
   - python3-tox-current-env
   - rpmconf
   - ruby
+  - rubygem-jekyll-asciidoc
   - vim-go
   - vim-golint
   - yamllint
 
 codec_pkgs:
-  - ffmpeg
+  - ffmpeg-free
   - libavcodec-freeworld
   - mozilla-openh264
   - gstreamer1-libav
