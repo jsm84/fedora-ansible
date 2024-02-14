@@ -21,3 +21,7 @@
       install_usenet: false
       install_daw: false
       install_artwork: false
+      install_base: false
+      install_cloud: false
+      install_devel: false
+      install_codecs: true

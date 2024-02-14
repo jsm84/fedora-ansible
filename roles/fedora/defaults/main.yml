@@ -6,6 +6,7 @@ install_devel: true
 install_codecs: false
 install_chrome: false
 install_chromium: false
+prune_pkgs: false
 
 base_pkgs:
   - ansible
@@ -57,7 +58,6 @@ devel_pkgs:
   - golang-docs
   - jq
   - patch
-  - python3
   - python3-devel
   - python3-tox-current-env
   - rpmconf

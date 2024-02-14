@@ -169,3 +169,37 @@
     state: present
   become: true
   when: "'gnome-shell' in ansible_facts.packages"
+
+- name: Prune unwanted packages
+  block:
+  - name: prune cloud packages
+    dnf:
+      name: "{{ cloud_pkgs }}"
+      state: absent
+    when: not install_cloud | bool
+
+  - name: prune devel packages
+    dnf:
+      name: "{{ devel_pkgs }}"
+      state: absent
+    when: not install_devel | bool
+
+  - name: prune base packages
+    dnf:
+      name: "{{ base_pkgs }}"
+      state: absent
+    when: not install_base | bool
+
+  - name: prune multimedia codecs
+    dnf:
+      name: "{{ codec_pkgs }}"
+      state: absent
+    when: not install_codecs | bool
+
+  - name: prune csb packages
+    dnf:
+      name: "{{ csb_pkgs }}"
+      state: absent
+    when: not install_csb | bool
+  become: true
+  when: prune_pkgs | bool
