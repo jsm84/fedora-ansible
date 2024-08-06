@@ -1,10 +1,20 @@
 ---
 # Fix an issue on certain laptops where suspend occurs when booting
 # with the lid closed while docked and/or plugged in (forever reboot)
+#
 - name: Disable systemd laptop lid-close power mgmt
-  lineinfile:
-    path: /etc/systemd/logind.conf
-    line: "HandleLidSwitchExternalPower=ignore"
+  block:
+  - name: Create /etc/systemd/logind.conf if missing
+    copy:
+      src: /usr/lib/systemd/logind.conf
+      dest: /etc/systemd/logind.conf
+      force: false
+      remote_src: true
+    ignore_errors: true
+  - name: Disable Lid Switch in /etc/logind.conf
+    lineinfile:
+      path: /etc/systemd/logind.conf
+      line: "HandleLidSwitchExternalPower=ignore"
   become: true
 
 - name: Disable Audio Popping on Intel HD Audio
