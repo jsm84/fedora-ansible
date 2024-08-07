@@ -20,6 +20,6 @@
         install_cloud: true
         install_csb: false
         install_devel: true
-        install_codecs: false
+        install_codecs: true
         install_chrome: false
         install_chromium: false

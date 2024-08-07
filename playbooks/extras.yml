@@ -16,12 +16,12 @@
   - role: extras
     vars:
       install_drivers: true
-      install_spotify: false
+      install_spotify: true
       install_media_players: false
-      install_usenet: false
+      install_usenet: true
       install_daw: false
       install_artwork: false
-      install_base: false
-      install_cloud: false
-      install_devel: false
+      install_base: true
+      install_cloud: true
+      install_devel: true
       install_codecs: true

@@ -151,6 +151,7 @@
     dnf:
       name: "{{ codec_pkgs }}"
       state: present
+      allowerasing: true
   become: true
   when: install_codecs | bool
 
