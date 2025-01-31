@@ -19,7 +19,9 @@
       install_spotify: true
       install_media_players: false
       install_usenet: true
+      remote_usenet: false
       install_daw: false
+      install_plex: false
       install_artwork: false
       install_base: true
       install_cloud: true

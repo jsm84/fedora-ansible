@@ -5,6 +5,7 @@
       - steam
       - wine
       - protontricks
+      - discord
     state: present
   become: true
 
@@ -79,6 +80,7 @@
     - name: Create the plugdev group
       group:
         name: plugdev
+        gid: 46
         state: present
 
     - name: Add current user to the plugdev group
@@ -126,6 +128,32 @@
   become: true
   when: install_usenet | bool
 
+- name: Configure remote access for sabnzbd
+  block:
+  - name: create systemd unit for sabnzbd
+    copy:
+      src: sabnzbd.service
+      dest: /etc/systemd/system/sabnzbd.service
+
+  - name: create sabnzbd service account
+    user:
+      name: sabnzbd
+      create_home: true
+
+  - name: add sabnzbd service (port 8080) to home firewall zone
+    firewalld:
+      service: jenkins
+      zone: home
+      state: enabled
+      permanent: true
+      immediate: true
+    notify:
+    - firewall-interfaces
+  become: true
+  when:
+  - remote_usenet | bool
+  - install_usenet | bool
+
 - name: Install Fedora artwork
   dnf:
     name: f{{ item }}-backgrounds-base,f{{ item }}-backgrounds-extras-base,f{{ item }}-backgrounds-extras-gnome,f{{ item }}-backgrounds-extras-xfce
@@ -141,3 +169,33 @@
     state: present
   become: true
   when: install_daw | bool
+
+- name: Install Plex Media Server
+  block:
+  - name: Setup Plex RPM repo
+    copy:
+      src: plex.repo
+      dest: /etc/yum.repos.d/plex.repo
+
+  - name: Import RPM Fusion (non-free) GPG Key
+    rpm_key:
+      key: https://rpmfusion.org/keys?action=AttachFile&do=get&target=RPM-GPG-KEY-rpmfusion-nonfree-fedora-2020
+      fingerprint: 79BD B88F 9BBF 7391 0FD4 095B 6A2A F961 9484 3C65
+
+  - name: Install Plex Media Server package
+    dnf:
+      name: "{{ media_servers }}"
+      state: present
+      allowerasing: true
+
+  - name:
+    firewalld:
+      zone: home
+      port: 32400/tcp
+      state: enabled
+      permanent: true
+      immediate: true
+    notify:
+    - firewall-interfaces
+  become: true
+  when: install_plex | bool

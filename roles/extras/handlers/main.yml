@@ -2,3 +2,14 @@
 - name: lpf-update
   debug:
     msg: "Remember to run `lpf update` to complete Spotify installation!"
+
+- name: firewall-interfaces
+  firewalld:
+    interface: "{{ item }}"
+    zone: home
+    state: enabled
+    permanent: true
+    immediate: true
+  with_items: "{{ ansible_interfaces }}"
+  when: item != 'lo'
+  become: true

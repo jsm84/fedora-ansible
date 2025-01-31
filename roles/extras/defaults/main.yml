@@ -5,6 +5,7 @@ install_media_players: false
 install_spotify: false
 install_artwork: false
 install_daw: false
+install_plex: false
 
 missing_steam_libs:
 - libbz2.i686
@@ -17,6 +18,21 @@ media_players:
 - mpv
 - celluloid
 - smplayer
+
+media_servers:
+- jellyfin
+- plexmediaserver
+#- kodi
+#- nextcloud
+## Other 3rd Party / Non OSS
+#- emby
+#- stremio
+#- mediaportal
+#- openmediavault
+#- universalmediaserver
+#- osmc
+#- gerbera
+#- red5
 
 daw_pkgs:
   - audacious
